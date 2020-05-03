@@ -10,8 +10,13 @@ headers = {
 r = requests.get(url, headers=headers)
 soup = Soup(r.text, "html.parser")
 
-table = soup.find('tbody', {'align': 'right'})
-rows = table('tr')
-for row in rows[:2]:
-    for col in row('td')[:3]:
-        print(col.text.strip())
+with open('stock_data.csv', "w", encoding="utf-8") as csv_file:
+    table = soup.find('tbody', {'align': 'right'})
+    rows = table('tr')
+    for row in rows:
+        data = list()
+        for col in row('td')[:3]:
+            data.append(col.text.strip())
+        print(data)
+        data = ",".join(data) + "\n"
+        csv_file.write(data)
