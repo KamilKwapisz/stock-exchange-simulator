@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
 from django.utils.decorators import method_decorator
@@ -8,10 +8,7 @@ from .forms import UserForm
 
 
 def index(request):
-    msg = f"Hello"
-    if request.user:
-        msg += f", {request.user.username}"
-    return HttpResponse(msg)
+    return render(request, 'index.html', {})
 
 
 class RegisterView(View):
@@ -38,3 +35,8 @@ class RegisterView(View):
             form.add_error('password_confirm', 'Passwords do not match')
 
         return render(request, self.template_name, {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return render(request, 'logged_out.html', {})
