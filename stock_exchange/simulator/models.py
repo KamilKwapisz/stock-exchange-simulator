@@ -10,7 +10,7 @@ class Account(models.Model):
     stocks = models.ManyToManyField('Stock')
 
     def __str__(self):
-        return f"{self.owner} account [{self.balance} PLN]"
+        return f"{self.owner} account [{self.balance}]"
 
 
 class Stock(models.Model):
@@ -40,3 +40,6 @@ class Transaction(models.Model):
     @property
     def amount(self):
         return self.stocks_number * self.stock_price
+
+    def __str__(self):
+        return f"{user.username} -- {self.operation}"
