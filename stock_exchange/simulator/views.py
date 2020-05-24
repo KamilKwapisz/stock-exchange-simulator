@@ -34,7 +34,6 @@ class RegisterView(View):
             login(self.request, user)
 
             return redirect(reverse('index'))
-
         elif form.cleaned_data['password'] != form.cleaned_data['password_confirm']:
             form.add_error('password_confirm', 'Passwords do not match')
 
