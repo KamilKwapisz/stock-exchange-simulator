@@ -43,3 +43,11 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{user.username} -- {self.operation}"
+
+
+class Wallet(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    number = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.number} akcji {self.stock}"

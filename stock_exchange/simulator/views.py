@@ -1,11 +1,12 @@
 from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 
 from .forms import UserForm
-from .models import Stock
+from .models import Account, Stock
 
 
 def index(request):
@@ -15,6 +16,12 @@ def index(request):
 def stock_data(request):
     stock_data = Stock.objects.all()
     return render(request, 'stock_data.html', {'stock_data': stock_data})
+
+
+def account_view(request):
+    account = Account.objects.get(owner=request.user)
+    print(account.stocks)
+    return render(request, 'index.html', {})
 
 
 class RegisterView(View):

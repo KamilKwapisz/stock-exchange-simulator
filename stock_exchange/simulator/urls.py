@@ -12,4 +12,5 @@ urlpatterns = [
     path('logout', views.logout_view, name='logout'),
 
     path('stock', views.stock_data, name='stock_data'),
+    path('account', views.account_view, name='account'),
 ]
