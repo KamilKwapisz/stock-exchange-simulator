@@ -5,10 +5,16 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 
 from .forms import UserForm
+from .models import Stock
 
 
 def index(request):
     return render(request, 'index.html', {})
+
+
+def stock_data(request):
+    stock_data = Stock.objects.all()
+    return render(request, 'stock_data.html', {'stock_data': stock_data})
 
 
 class RegisterView(View):
