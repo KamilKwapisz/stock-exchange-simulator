@@ -37,6 +37,9 @@ class StockDetail(DetailView):
         context = super(StockDetail, self).get_context_data(**kwargs)
         context['form'] = StockBuyForm()
         context['form'].fields['stock_pk'].initial = self.object.pk
+
+        account = Account.objects.get(owner=self.request.user)
+        context['balance'] = account.balance
         return context
 
 
