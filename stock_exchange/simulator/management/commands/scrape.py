@@ -4,11 +4,12 @@ class Command(BaseCommand):
     help = 'Scrape stock data'
 
     def add_arguments(self, parser):
-        pass
-        # parser.add_argument('poll_ids', nargs='+', type=int)
+        DEFAULT_URL = "https://stooq.pl/t/?i=532"
+        parser.add_argument('url', type=str, nargs='?', default=DEFAULT_URL)
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.SUCCESS("Running command"))
+        url = options['url']
+        self.stdout.write(self.style.SUCCESS(f"URL: {url}"))
         # for poll_id in options['poll_ids']:
         #     try:
         #         poll = Poll.objects.get(pk=poll_id)
