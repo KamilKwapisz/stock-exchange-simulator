@@ -13,7 +13,7 @@ class UserForm(forms.ModelForm):
         fields = ['username', 'email', 'password']
 
 
-class AccoutCharge(forms.Form):
+class AccoutChargeForm(forms.Form):
     amount = forms.MoneyField(
         decimal_places=2,
         validators=[
