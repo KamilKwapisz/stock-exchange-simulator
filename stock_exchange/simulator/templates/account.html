@@ -3,8 +3,13 @@
 <h1>Twoje konto</h1>
 <p>Saldo: <b>{{account.balance}}</b></p>
 
-{% if account.wallets %}
+{% if account.wallets.all %}
 <p>Twoje akcje:</p>
+<ul>
+  {% for wallet in account.wallets.all %}
+    <li>{{ wallet }}</li>
+  {% endfor %}
+</ul>
 {% else %}
 <p>Brak akcji</p>
 

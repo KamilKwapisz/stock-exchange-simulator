@@ -49,5 +49,9 @@ class Wallet(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     number = models.IntegerField(default=1)
 
+    @property
+    def amount(self):
+        return self.number * self.stock.price
+
     def __str__(self):
-        return f"{self.number} akcji {self.stock}"
+        return f"{self.number} akcji {self.stock.name} -> {self.amount}"
