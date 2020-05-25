@@ -1,5 +1,6 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView
+from django.views.decorators.http import require_POST
 
 from . import views
 
@@ -13,6 +14,7 @@ urlpatterns = [
 
     path('stock', views.stock_data, name='stock_data'),
     path('stock/<slug:name>', views.StockDetail.as_view(), name='stock_detail'),
+    path('buy-stock', require_POST(views.StockBuyFormView.as_view()), name='buy_stock'),
     path('account', views.account_view, name='account'),
     path('charge-account', views.ChargeAccountView.as_view(), name='charge_account'),
 

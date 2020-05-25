@@ -3,4 +3,10 @@
 <h1>{{ object.name }}</h1>
 <h3>{{ object.price }}</h3>
 
+<form method="post" action="{% url 'simulator:buy_stock' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Kup akcje!</button>
+</form>
+
 {% endblock %}

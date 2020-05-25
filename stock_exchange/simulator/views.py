@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 from djmoney.money import Money
 
-from .forms import AccoutChargeForm, UserForm
+from .forms import AccoutChargeForm, StockBuyForm, UserForm
 from .models import Account, Stock
 
 
@@ -31,6 +31,21 @@ class StockDetail(DetailView):
     def get_object(self):
         stock = Stock.objects.get(name=self.kwargs['name'])
         return stock
+    
+    def get_context_data(self, **kwargs):
+        context = super(StockDetail, self).get_context_data(**kwargs)
+        context['form'] = StockBuyForm
+        return context
+
+
+class StockBuyFormView(FormView):
+    form_class = StockBuyForm
+    success_url = '/account'
+
+    def form_valid(self, form):
+        number = int(form.cleaned_data.get('number'))
+        print(number)
+        return super().form_valid(form)
 
 
 def account_view(request):
