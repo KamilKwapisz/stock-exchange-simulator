@@ -10,7 +10,8 @@ from django.views.decorators.debug import sensitive_variables, sensitive_post_pa
 from djmoney.money import Money
 
 from .forms import AccoutChargeForm, StockBuyForm, UserForm
-from .models import Account, Stock
+from .models import Account, Stock, Wallet
+from .utils import save_wallets
 
 
 def index(request):
@@ -34,17 +35,32 @@ class StockDetail(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super(StockDetail, self).get_context_data(**kwargs)
-        context['form'] = StockBuyForm
+        context['form'] = StockBuyForm()
+        context['form'].fields['stock_pk'].initial = self.object.pk
         return context
 
 
 class StockBuyFormView(FormView):
     form_class = StockBuyForm
     success_url = '/account'
+    template_name = 'stock_detail.html'
 
     def form_valid(self, form):
+        user = self.request.user
+        account = Account.objects.get(owner=user)
+
         number = int(form.cleaned_data.get('number'))
-        print(number)
+        stock_pk = int(form.cleaned_data.get('stock_pk'))
+        stock = Stock.objects.get(pk=stock_pk)
+
+        amount = number * stock.price
+        if amount > account.balance:
+            return super().form_invalid(form)
+        
+        save_wallets(account, stock, number)
+
+        account.balance -= amount
+        account.save()
         return super().form_valid(form)
 
 
