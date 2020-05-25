@@ -20,7 +20,7 @@ class Stock(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name}[{self.short_name}]"
+        return f"{self.name}[{self.short_name}] - {self.price}"
 
 
 class Transaction(models.Model):
