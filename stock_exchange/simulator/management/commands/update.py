@@ -4,19 +4,21 @@ class Command(BaseCommand):
     help = 'Update stock data'
 
     def add_arguments(self, parser):
-        DEFAULT_URL = "https://stooq.pl/t/?i=532"
-        parser.add_argument('url', type=str, nargs='?', default=DEFAULT_URL)
+        DEFAULT_FILENAME = "stock_data.csv"
+        parser.add_argument('filename', type=str, nargs='?', default=DEFAULT_FILENAME)
 
     def handle(self, *args, **options):
-        url = options['url']
-        self.stdout.write(self.style.SUCCESS(f"URL: {url}"))
-        # for poll_id in options['poll_ids']:
-        #     try:
-        #         poll = Poll.objects.get(pk=poll_id)
-        #     except Poll.DoesNotExist:
-        #         raise CommandError('Poll "%s" does not exist' % poll_id)
+        data = self.__read_file()
+        print(data)
+        self.stdout.write(self.style.SUCCESS(f"filename: {filename}"))
 
-        #     poll.opened = False
-        #     poll.save()
 
-        #     self.stdout.write(self.style.SUCCESS('Successfully closed poll "%s"' % poll_id))
+    def __read_file(self):
+        filename = options['filename']
+        try:
+            with open(filename, "r", encoding='utf-8') as reader:
+                data = reader.readlines()
+        except FileNotFoundError:
+            raise CommandError(f"Brak pliku o nazwie {filename}")
+        else:
+            return data
