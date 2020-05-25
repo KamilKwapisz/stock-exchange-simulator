@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
-    help = 'Scrape stock data'
+    help = 'Update stock data'
 
     def add_arguments(self, parser):
         DEFAULT_URL = "https://stooq.pl/t/?i=532"
