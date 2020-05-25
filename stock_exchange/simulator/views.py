@@ -1,14 +1,38 @@
 from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
+from django.views.generic.detail import DetailView
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 
 from .forms import UserForm
+from .models import Account, Stock
 
 
 def index(request):
     return render(request, 'index.html', {})
+
+
+def stock_data(request):
+    stock_data = Stock.objects.all()
+    return render(request, 'stock_data.html', {'stock_data': stock_data})
+
+
+class StockDetail(DetailView):
+    model = Stock
+    template_name = "stock_detail.html"
+    context_object_name = "stocks"
+    slug_url_kwarg = "name"
+
+    def get_object(self):
+        stock = Stock.objects.get(name=self.kwargs['name'])
+        return stock
+
+
+def account_view(request):
+    account = Account.objects.get(owner=request.user)
+    return render(request, 'account.html', {'account': account})
 
 
 class RegisterView(View):

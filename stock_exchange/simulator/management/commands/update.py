@@ -43,7 +43,7 @@ class Command(BaseCommand):
         stock_data = list()
         for row in data:
             row = row.rstrip()
-            name, short_name, price = row.split(",")
+            short_name, name, price = row.split(",")
             try:
                 price = float(price)
             except ValueError:
