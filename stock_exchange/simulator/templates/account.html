@@ -1,0 +1,13 @@
+{% block body %}
+
+<h1>Twoje konto</h1>
+<p>Saldo: <b>{{account.balance}}</b></p>
+
+{% if account.wallets %}
+<p>Twoje akcje:</p>
+{% else %}
+<p>Brak akcji</p>
+
+{% endif %}
+<a href="{% url 'simulator:stock_data' %}">Kup akcje!</a>
+{% endblock %}

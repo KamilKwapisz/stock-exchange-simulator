@@ -20,8 +20,7 @@ def stock_data(request):
 
 def account_view(request):
     account = Account.objects.get(owner=request.user)
-    print(account.stocks)
-    return render(request, 'index.html', {})
+    return render(request, 'account.html', {'account': account})
 
 
 class RegisterView(View):
