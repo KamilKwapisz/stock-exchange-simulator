@@ -3,14 +3,16 @@
 <h1>Giełda</h1>
 <table>
     <tr>
-      <th>Nazwa firmy</th>
+      <!-- <th>Nazwa firmy</th> -->
       <th>Skrót</th> 
       <th>Cena akcji</th>
     </tr>
     {% for stock in stock_data %}  
     <tr>
-        <th>{{ stock.name }}</th>
-        <th>{{ stock.short_name }}</th>
+        <!-- <th>{{ stock.name }}</th> -->
+        <th>
+          <a href="{% url 'simulator:stock_detail' stock.pk %}">{{ stock.short_name }}</a>
+        </th>
         <th>{{ stock.price }}</th>
     </tr>
     {% endfor %}

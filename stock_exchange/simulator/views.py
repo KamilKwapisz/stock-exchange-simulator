@@ -2,6 +2,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
+from django.views.generic.detail import DetailView
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 
@@ -17,6 +18,10 @@ def stock_data(request):
     stock_data = Stock.objects.all()
     return render(request, 'stock_data.html', {'stock_data': stock_data})
 
+
+class StockDetail(DetailView):
+    model = Stock
+    template_name = "stock_detail.html"
 
 def account_view(request):
     account = Account.objects.get(owner=request.user)
