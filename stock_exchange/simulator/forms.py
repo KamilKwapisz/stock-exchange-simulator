@@ -14,7 +14,7 @@ class UserForm(forms.ModelForm):
 
 
 class AccoutChargeForm(forms.Form):
-    amount = forms.MoneyField(
+    amount = MoneyField(
         decimal_places=2,
         validators=[
             MinMoneyValidator(10),
