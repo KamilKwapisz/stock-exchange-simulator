@@ -14,4 +14,6 @@ urlpatterns = [
     path('stock', views.stock_data, name='stock_data'),
     path('stock/<slug:name>', views.StockDetail.as_view(), name='stock_detail'),
     path('account', views.account_view, name='account'),
+    path('charge-account', views.ChargeAccountView.as_view(), name='charge_account'),
+
 ]

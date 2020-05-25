@@ -1,12 +1,15 @@
 from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import FormView
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
+from djmoney.money import Money
 
-from .forms import UserForm
+from .forms import AccoutChargeForm, UserForm
 from .models import Account, Stock
 
 
@@ -64,3 +67,18 @@ class RegisterView(View):
 def logout_view(request):
     logout(request)
     return render(request, 'logged_out.html', {})
+
+
+class ChargeAccountView(LoginRequiredMixin, FormView):
+    template_name = 'charge.html'
+    form_class = AccoutChargeForm
+    success_url = '/account'
+
+    def form_valid(self, form):
+        user = self.request.user
+        account = Account.objects.get(owner=user)
+        amount = float(form.cleaned_data.get('amount'))
+        money = Money(amount, 'PLN')
+        account.balance += money
+        account.save()
+        return super().form_valid(form)

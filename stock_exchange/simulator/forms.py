@@ -1,7 +1,6 @@
 from django.contrib.auth.forms import User
 from django import forms
-from djmoney.models.fields import MoneyField
-from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class UserForm(forms.ModelForm):
@@ -14,10 +13,10 @@ class UserForm(forms.ModelForm):
 
 
 class AccoutChargeForm(forms.Form):
-    amount = MoneyField(
-        decimal_places=2,
-        validators=[
-            MinMoneyValidator(10),
-            MaxMoneyValidator(1000000),
-        ]
+    amount = forms.DecimalField(
+        decimal_places=2, 
+        validators=(
+            MinValueValidator(10.0),
+            MaxValueValidator(1000000.0)
+        )
     )
