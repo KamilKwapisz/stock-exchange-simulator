@@ -15,8 +15,13 @@ class UserForm(forms.ModelForm):
 class AccoutChargeForm(forms.Form):
     amount = forms.DecimalField(
         decimal_places=2, 
+        
         validators=(
             MinValueValidator(10.0),
             MaxValueValidator(1000000.0)
         )
     )
+
+
+class StockBuyForm(forms.Form):
+    number = forms.IntegerField(min_value=1, max_value=1000000)
