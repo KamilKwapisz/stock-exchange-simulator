@@ -11,7 +11,7 @@
     <tr>
         <!-- <th>{{ stock.name }}</th> -->
         <th>
-          <a href="{% url 'simulator:stock_detail' stock.pk %}">{{ stock.short_name }}</a>
+          <a href="{% url 'simulator:stock_detail' stock.name %}">{{ stock.short_name }}</a>
         </th>
         <th>{{ stock.price }}</th>
     </tr>

@@ -22,6 +22,13 @@ def stock_data(request):
 class StockDetail(DetailView):
     model = Stock
     template_name = "stock_detail.html"
+    context_object_name = "stocks"
+    slug_url_kwarg = "name"
+
+    def get_object(self):
+        stock = Stock.objects.get(name=self.kwargs['name'])
+        return stock
+
 
 def account_view(request):
     account = Account.objects.get(owner=request.user)
