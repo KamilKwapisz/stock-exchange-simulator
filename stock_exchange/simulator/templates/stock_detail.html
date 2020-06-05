@@ -1,6 +1,7 @@
 {% block body %}
 
 <h1>{{ object.name }}</h1>
+<h2>Kup akcje</h2>
 <h3>Cena 1 akcji: {{ object.price }}</h3>
 
 <p>Twoje saldo: {{ balance }}</p>
@@ -12,4 +13,13 @@
 
 <!-- TODO: walidajca czy usera stać -->
 <!-- TODO: wyświetlenie ceny całkowitej -->
+
+<h2>Dane historyczne</h2>
+{% if historical_data %}
+    {% for data in historical_data %}
+        <li>
+            {{ data.timestamp }} -- {{ data.price }}
+        </li>
+    {% endfor %}
+{% endif %}
 {% endblock %}
