@@ -26,3 +26,7 @@ class AccoutChargeForm(forms.Form):
 class StockBuyForm(forms.Form):
     number = forms.IntegerField(min_value=1, max_value=1000000)
     stock_pk = forms.IntegerField(widget=forms.HiddenInput())
+
+
+class StockSellForm(forms.Form):
+    number = forms.IntegerField(min_value=1, max_value=1000000)
