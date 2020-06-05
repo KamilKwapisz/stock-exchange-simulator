@@ -23,7 +23,7 @@
 <ul>
   {% for transaction in transactions %}
     <li>
-        [{{transaction.operation}}] {{transaction.stock.short_name}}
+        [{{transaction.get_operation_display }}] {{transaction.stocks_number}} akcji {{transaction.stock.short_name}} --> {{transaction.amount}}
     </li>
   {% endfor %}
 </ul>
