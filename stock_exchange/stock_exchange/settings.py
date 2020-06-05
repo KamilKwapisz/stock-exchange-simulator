@@ -92,3 +92,6 @@ STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_VIEW = '/login/'
+
+MINIMAL_FEE = 1.0
+PERCENTAGE_FEE = 0.1

@@ -1,3 +1,6 @@
+from django.conf import settings
+from djmoney.money import Money
+
 from .models import Wallet
 
 
@@ -12,3 +15,16 @@ def save_wallets(account, stock, number):
         wallet.save()
         account.wallets.add(wallet)
         account.save()
+
+
+def calculate_fee(amount):
+    MINIMAL_FEE = Money(float(getattr(settings, "MINIMAL_FEE", None)), 'PLN')
+    PERCENTAGE_FEE = int(getattr(settings, "PERCENTAGE_FEE", None))
+
+    fee = amount * (PERCENTAGE_FEE / 100)
+    if fee < MINIMAL_FEE:
+        fee = MINIMAL_FEE
+    else:
+        fee = Money(fee, "PLN")
+    
+    return fee
