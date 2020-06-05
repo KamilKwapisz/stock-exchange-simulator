@@ -1,13 +1,17 @@
 from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import FormView
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
+from djmoney.money import Money
 
-from .forms import UserForm
-from .models import Account, Stock
+from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm
+from .models import Account, Stock, Wallet
+from .utils import save_wallets
 
 
 def index(request):
@@ -28,6 +32,72 @@ class StockDetail(DetailView):
     def get_object(self):
         stock = Stock.objects.get(name=self.kwargs['name'])
         return stock
+    
+    def get_context_data(self, **kwargs):
+        context = super(StockDetail, self).get_context_data(**kwargs)
+        context['form'] = StockBuyForm()
+        context['form'].fields['stock_pk'].initial = self.object.pk
+
+        account = Account.objects.get(owner=self.request.user)
+        context['balance'] = account.balance
+        return context
+
+
+class StockBuyFormView(FormView):
+    form_class = StockBuyForm
+    success_url = '/account'
+    template_name = 'stock_detail.html'
+
+    def form_valid(self, form):
+        user = self.request.user
+        account = Account.objects.get(owner=user)
+
+        number = int(form.cleaned_data.get('number'))
+        stock_pk = int(form.cleaned_data.get('stock_pk'))
+        stock = Stock.objects.get(pk=stock_pk)
+
+        amount = number * stock.price
+        if amount > account.balance:
+            return super().form_invalid(form)
+        
+        save_wallets(account, stock, number)
+
+        account.balance -= amount
+        account.save()
+        return super().form_valid(form)
+
+
+class StockSellFormView(FormView):
+    form_class = StockSellForm
+    success_url = '/account'
+    template_name = 'stock_sell.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StockSellFormView, self).get_context_data(**kwargs)
+        context['wallet_pk'] = self.kwargs['wallet_pk']
+        return context
+
+    def form_valid(self, form):
+        user = self.request.user
+        account = Account.objects.get(owner=user)
+
+        number = int(form.cleaned_data.get('number'))
+        wallet_pk = self.kwargs['wallet_pk']
+        wallet = Wallet.objects.get(pk=wallet_pk)
+        stock = wallet.stock
+
+        amount = number * stock.price
+        wallet.number -= number
+        if wallet.number == 0:
+            wallet.delete()
+        elif wallet.number < 0:
+            return super().form_invalid(form)
+        else:
+            wallet.save()
+
+        account.balance += amount
+        account.save()
+        return super().form_valid(form)
 
 
 def account_view(request):
@@ -64,3 +134,18 @@ class RegisterView(View):
 def logout_view(request):
     logout(request)
     return render(request, 'logged_out.html', {})
+
+
+class ChargeAccountView(LoginRequiredMixin, FormView):
+    template_name = 'charge.html'
+    form_class = AccoutChargeForm
+    success_url = '/account'
+
+    def form_valid(self, form):
+        user = self.request.user
+        account = Account.objects.get(owner=user)
+        amount = float(form.cleaned_data.get('amount'))
+        money = Money(amount, 'PLN')
+        account.balance += money
+        account.save()
+        return super().form_valid(form)

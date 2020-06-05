@@ -1,13 +1,16 @@
 {% block body %}
 
 <h1>Twoje konto</h1>
-<p>Saldo: <b>{{account.balance}}</b></p>
+<p>Saldo: <b>{{account.balance}}</b>
+  <a href="{% url 'simulator:charge_account' %}">Doładuj konto</a>
+</p>
+
 
 {% if account.wallets.all %}
 <p>Twoje akcje:</p>
 <ul>
   {% for wallet in account.wallets.all %}
-    <li>{{ wallet }}</li>
+    <li>{{ wallet }}  <a href="{% url 'simulator:sell_stock' wallet.pk %}">Sprzedaj</a></li> 
   {% endfor %}
 </ul>
 {% else %}

@@ -1,6 +1,15 @@
 {% block body %}
 
 <h1>{{ object.name }}</h1>
-<h3>{{ object.price }}</h3>
+<h3>Cena 1 akcji: {{ object.price }}</h3>
 
+<p>Twoje saldo: {{ balance }}</p>
+<form method="post" action="{% url 'simulator:buy_stock' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Kup akcje!</button>
+</form>
+
+<!-- TODO: walidajca czy usera stać -->
+<!-- TODO: wyświetlenie ceny całkowitej -->
 {% endblock %}
