@@ -62,5 +62,8 @@ class StockHistory(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     price = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN')
 
+    class Meta:
+        verbose_name_plural = "stock historical data"
+
     def __str__(self):
         return f"{self.stock.short_name} at {self.price} ({self.timestamp})"
