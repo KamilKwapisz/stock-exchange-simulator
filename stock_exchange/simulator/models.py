@@ -41,7 +41,7 @@ class Transaction(models.Model):
         return self.stocks_number * self.stock_price
 
     def __str__(self):
-        return f"{user.username} -- {self.operation}"
+        return f"{self.user.username} -- {self.operation}"
 
 
 class Wallet(models.Model):

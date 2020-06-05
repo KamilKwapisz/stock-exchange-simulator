@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_variables, sensitive_post_pa
 from djmoney.money import Money
 
 from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm
-from .models import Account, Stock, StockHistory, Wallet
+from .models import Account, Stock, StockHistory, Wallet, Transaction
 from .utils import save_wallets, calculate_fee, sell_stocks
 
 
@@ -74,6 +74,15 @@ class StockBuyFormView(FormView):
 
         amount += calculate_fee(amount)
 
+        transaction = Transaction(
+            user=self.request.user,
+            stock=stock,
+            operation="buy",
+            stocks_number=number,
+            stock_price=stock.price
+        )
+        transaction.save()
+
         account.balance -= amount
         account.save()
         return super().form_valid(form)
@@ -109,12 +118,30 @@ class StockSellFormView(FormView):
 
         account.balance += amount
         account.save()
+
+        transaction = Transaction(
+            user=self.request.user,
+            stock=stock,
+            operation="sell",
+            stocks_number=number,
+            stock_price=stock.price
+        )
+        transaction.save()
+
         return super().form_valid(form)
 
 
 def account_view(request):
     account = Account.objects.get(owner=request.user)
-    return render(request, 'account.html', {'account': account})
+    transactions = Transaction.objects.filter(
+        user=request.user
+    ).order_by('-timestamp')
+    
+    context = {
+        'account': account,
+        'transactions': transactions
+    }
+    return render(request, 'account.html', context)
 
 
 class RegisterView(View):
