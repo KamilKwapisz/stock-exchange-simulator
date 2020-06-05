@@ -4,14 +4,15 @@ from djmoney.money import Money
 from .models import Wallet, StockHistory
 
 
-def save_wallets(account, stock, number):
+def save_wallets(account, stock, number, stoploss):
     for wallet in account.wallets.all():
         if wallet.stock == stock:
             wallet.number += number
+            wallet.stoploss = stoploss
             wallet.save()
             break
     else:
-        wallet = Wallet(stock=stock, number=number)
+        wallet = Wallet(stock=stock, number=number, stoploss=stoploss)
         wallet.save()
         account.wallets.add(wallet)
         account.save()
