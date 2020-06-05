@@ -17,5 +17,17 @@
 <p>Brak akcji</p>
 
 {% endif %}
+
+{% if transactions %}
+<h2>Historia transakcji</h2>
+<ul>
+  {% for transaction in transactions %}
+    <li>
+        [{{transaction.operation}}] {{transaction.stock.short_name}}
+    </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 <a href="{% url 'simulator:stock_data' %}">Kup akcje!</a>
 {% endblock %}

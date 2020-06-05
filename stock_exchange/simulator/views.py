@@ -133,7 +133,15 @@ class StockSellFormView(FormView):
 
 def account_view(request):
     account = Account.objects.get(owner=request.user)
-    return render(request, 'account.html', {'account': account})
+    transactions = Transaction.objects.filter(
+        user=request.user
+    ).order_by('-timestamp')
+    
+    context = {
+        'account': account,
+        'transactions': transactions
+    }
+    return render(request, 'account.html', context)
 
 
 class RegisterView(View):
