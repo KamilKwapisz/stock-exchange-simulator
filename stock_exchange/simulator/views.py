@@ -11,7 +11,7 @@ from djmoney.money import Money
 
 from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm
 from .models import Account, Stock, Wallet
-from .utils import save_wallets
+from .utils import save_wallets, calculate_fee
 
 
 def index(request):
@@ -62,6 +62,9 @@ class StockBuyFormView(FormView):
         
         save_wallets(account, stock, number)
 
+        print(amount, calculate_fee(amount))
+        amount += calculate_fee(amount)
+
         account.balance -= amount
         account.save()
         return super().form_valid(form)
@@ -94,6 +97,8 @@ class StockSellFormView(FormView):
             return super().form_invalid(form)
         else:
             wallet.save()
+
+        amount -= calculate_fee(amount)
 
         account.balance += amount
         account.save()
