@@ -1,7 +1,7 @@
 from django.conf import settings
 from djmoney.money import Money
 
-from .models import Wallet
+from .models import Wallet, StockHistory
 
 
 def save_wallets(account, stock, number):
@@ -28,3 +28,12 @@ def calculate_fee(amount):
         fee = Money(fee, "PLN")
     
     return fee
+
+
+def save_stock_history(stock):
+    stockHistory = StockHistory(
+        stock=stock,
+        timestamp=stock.timestamp,
+        price=stock.price
+    )
+    stockHistory.save()

@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from simulator.models import Stock
+from simulator.utils import save_stock_history
 
 
 class Command(BaseCommand):
@@ -26,6 +27,8 @@ class Command(BaseCommand):
                 stock.price = row.get('price')
             finally:
                 stock.save()
+                # saving stock history
+                save_stock_history(stock)
 
         self.stdout.write(self.style.SUCCESS(f"Successfully updated {len(stock_data)} stock data"))
 

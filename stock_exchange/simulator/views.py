@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_variables, sensitive_post_pa
 from djmoney.money import Money
 
 from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm
-from .models import Account, Stock, Wallet
+from .models import Account, Stock, StockHistory, Wallet
 from .utils import save_wallets, calculate_fee
 
 
@@ -32,6 +32,10 @@ class StockDetail(DetailView):
     def get_object(self):
         stock = Stock.objects.get(name=self.kwargs['name'])
         return stock
+
+    def get_historical_data(self):
+        historical_data = StockHistory.objects.filter(stock=self.object)
+        return historical_data
     
     def get_context_data(self, **kwargs):
         context = super(StockDetail, self).get_context_data(**kwargs)
@@ -40,6 +44,8 @@ class StockDetail(DetailView):
 
         account = Account.objects.get(owner=self.request.user)
         context['balance'] = account.balance
+
+        context['historical_data'] = self.get_historical_data()
         return context
 
 
