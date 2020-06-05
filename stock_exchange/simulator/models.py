@@ -35,7 +35,6 @@ class Transaction(models.Model):
     operation = models.CharField(max_length=4, choices=OPERATIONS)
     stocks_number = models.IntegerField()
     stock_price = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN')
-    # stoploss = MoneyField(max_digits=14, decimal_places=2, null=True, default_currency='PLN')
 
     @property
     def amount(self):
@@ -48,6 +47,7 @@ class Transaction(models.Model):
 class Wallet(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     number = models.IntegerField(default=1)
+    stoploss = MoneyField(max_digits=14, decimal_places=2, null=True, default_currency='PLN')
 
     @property
     def amount(self):

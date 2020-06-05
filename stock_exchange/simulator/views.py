@@ -11,7 +11,7 @@ from djmoney.money import Money
 
 from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm
 from .models import Account, Stock, StockHistory, Wallet
-from .utils import save_wallets, calculate_fee
+from .utils import save_wallets, calculate_fee, sell_stocks
 
 
 def index(request):
@@ -59,6 +59,10 @@ class StockBuyFormView(FormView):
         account = Account.objects.get(owner=user)
 
         number = int(form.cleaned_data.get('number'))
+        stoploss = form.cleaned_data.get('stoploss', None)
+        if stoploss is not None:
+            stoploss = Money(stoploss, "PLN")
+
         stock_pk = int(form.cleaned_data.get('stock_pk'))
         stock = Stock.objects.get(pk=stock_pk)
 
@@ -66,9 +70,8 @@ class StockBuyFormView(FormView):
         if amount > account.balance:
             return super().form_invalid(form)
         
-        save_wallets(account, stock, number)
+        save_wallets(account, stock, number, stoploss)
 
-        print(amount, calculate_fee(amount))
         amount += calculate_fee(amount)
 
         account.balance -= amount
@@ -96,13 +99,11 @@ class StockSellFormView(FormView):
         stock = wallet.stock
 
         amount = number * stock.price
-        wallet.number -= number
-        if wallet.number == 0:
-            wallet.delete()
-        elif wallet.number < 0:
+
+        try:
+            sell_stocks(wallet, number)
+        except ValueError:
             return super().form_invalid(form)
-        else:
-            wallet.save()
 
         amount -= calculate_fee(amount)
 
