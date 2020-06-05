@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 from djmoney.money import Money
 
-from .forms import AccoutChargeForm, StockBuyForm, UserForm
+from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm
 from .models import Account, Stock, Wallet
 from .utils import save_wallets
 
@@ -63,6 +63,39 @@ class StockBuyFormView(FormView):
         save_wallets(account, stock, number)
 
         account.balance -= amount
+        account.save()
+        return super().form_valid(form)
+
+
+class StockSellFormView(FormView):
+    form_class = StockSellForm
+    success_url = '/account'
+    template_name = 'stock_sell.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StockSellFormView, self).get_context_data(**kwargs)
+        context['wallet_pk'] = self.kwargs['wallet_pk']
+        return context
+
+    def form_valid(self, form):
+        user = self.request.user
+        account = Account.objects.get(owner=user)
+
+        number = int(form.cleaned_data.get('number'))
+        wallet_pk = self.kwargs['wallet_pk']
+        wallet = Wallet.objects.get(pk=wallet_pk)
+        stock = wallet.stock
+
+        amount = number * stock.price
+        wallet.number -= number
+        if wallet.number == 0:
+            wallet.delete()
+        elif wallet.number < 0:
+            return super().form_invalid(form)
+        else:
+            wallet.save()
+
+        account.balance += amount
         account.save()
         return super().form_valid(form)
 

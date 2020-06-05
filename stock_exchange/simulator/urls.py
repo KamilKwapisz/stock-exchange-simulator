@@ -15,6 +15,7 @@ urlpatterns = [
     path('stock', views.stock_data, name='stock_data'),
     path('stock/<slug:name>', views.StockDetail.as_view(), name='stock_detail'),
     path('buy-stock', require_POST(views.StockBuyFormView.as_view()), name='buy_stock'),
+    path('sell-stock/<int:wallet_pk>', views.StockSellFormView.as_view(), name='sell_stock'),
     path('account', views.account_view, name='account'),
     path('charge-account', views.ChargeAccountView.as_view(), name='charge_account'),
 
