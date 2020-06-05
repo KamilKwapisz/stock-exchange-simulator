@@ -38,3 +38,14 @@ def save_stock_history(stock):
         price=stock.price
     )
     stockHistory.save()
+
+
+def sell_stocks(wallet, number):
+    wallet.number -= number
+    
+    if wallet.number == 0:
+        wallet.delete()
+    elif wallet.number < 0:
+        raise ValueError()
+    else:
+        wallet.save()
