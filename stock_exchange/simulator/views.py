@@ -59,6 +59,10 @@ class StockBuyFormView(FormView):
         account = Account.objects.get(owner=user)
 
         number = int(form.cleaned_data.get('number'))
+        stoploss = form.cleaned_data.get('stoploss', None)
+        if stoploss is not None:
+            stoploss = Money(stoploss, "PLN")
+
         stock_pk = int(form.cleaned_data.get('stock_pk'))
         stock = Stock.objects.get(pk=stock_pk)
 
@@ -66,9 +70,8 @@ class StockBuyFormView(FormView):
         if amount > account.balance:
             return super().form_invalid(form)
         
-        save_wallets(account, stock, number)
+        save_wallets(account, stock, number, stoploss)
 
-        print(amount, calculate_fee(amount))
         amount += calculate_fee(amount)
 
         account.balance -= amount
