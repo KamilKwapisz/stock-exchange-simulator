@@ -10,7 +10,7 @@
 <p>Twoje akcje:</p>
 <ul>
   {% for wallet in account.wallets.all %}
-    <li>{{ wallet }}</li>
+    <li>{{ wallet }}  <a href="{% url 'simulator:sell_stock' wallet.pk %}">Sprzedaj</a></li> 
   {% endfor %}
 </ul>
 {% else %}
