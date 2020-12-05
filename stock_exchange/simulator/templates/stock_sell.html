@@ -1,9 +1,101 @@
-{% block body %}
+{% extends 'base.html' %}
+{% load static %}
 
-<form method="post"> 
-  {% csrf_token %} 
-  {{ form.as_p }} 
-  <input type="submit" value="Save"> 
-</form> 
+
+{% block content %}
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center mb-4">
+                        <h1 class="h3 mb-0 text-gray-800 font-weight-bolder"> Doładowanie konta</h1>
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+                    <div class="col-xl-8">
+                    <div class="card  shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Sprzedaj akcje firmy {{ stock_name }}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <p>
+                                                <label for="{{form.number.id_for_label}}">Podaj liczbę akcji do sprzedania (posiadasz {{stocks_number}} akcji)</label>
+                                                <input type="number" name="{{form.number.html_name}}" step="0.1" min="1" max="{{stocks_number}}" id="{{form.number.id_for_label}}">
+                                        </p>
+                                        <button type="submit" class="btn btn-success">Sprzedaj</button>
+                                    </form>
+                                </div>
+                            </div>
+                    </div>
+                    </div>
+                    
+                
+
+                    <!-- Content Row -->
+                    <div class="row">
+                        {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                        <!-- Content Column -->
+                        <div class="col-lg-6 mb-4">
+
+                            
+
+                            
+
+                        </div>
+
+                        <div class="col-lg-6 mb-4">
+
+                    
+                            
+
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+{% endblock %}
+{% block scripts %}
+<script>
+    function validateBuyForm(form){
+    console.log(form);
+    let stocksNumber = document.getElementById("id_number").value;
+    console.log(stocksNumber);
+    try {
+        stocksNumber = parseInt(stocksNumber)
+    } catch (error) {
+        return false;
+    }
+    let price = {{ object.price }};
+    let balance = {{ balance }};
+    console.log(price);
+    console.log(balance);
+    if (price * stocksNumber > balance) {
+        return false;
+    } else {
+        return true;
+    }
+}
+</script>
 
 {% endblock %}
