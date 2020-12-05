@@ -1,6 +1,8 @@
 import os
 
 from decouple import config
+import mimetypes
+
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -89,9 +91,12 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_VIEW = '/login/'
 
 MINIMAL_FEE = 1.0
 PERCENTAGE_FEE = 0.1
+
+mimetypes.add_type("text/css", ".css", True)
