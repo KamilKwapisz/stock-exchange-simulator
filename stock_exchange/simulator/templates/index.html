@@ -9,8 +9,6 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Twoja wirtualna giełda</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
 
                     <!-- Content Row -->
@@ -177,8 +175,8 @@
                                         <a href="{% url 'simulator:stock_detail' stock.name %}">
                                         <div class="row">
                                             <div class="col-4">
-                                                <img src="https://dummyimage.com/50" class="img-thumbnail border-0 rounded float-left">
-                                                <!-- <img src="{% static 'simulator/img/stock_logos/'|add:stock.logo_filename %}" class="img-thumbnail border-0 rounded float-left"> -->
+                                                <!-- <img src="https://dummyimage.com/50" class="img-thumbnail border-0 rounded float-left"> -->
+                                                <img src="{% static 'simulator/img/stock_logos/'|add:stock.logo_filename %}" width="50" height="50" class="img-thumbnail border-0 rounded float-left">
                                             </div>
                                             <div class="col-8 p-3">
                                                 <p><b>{{ stock.name }}</b> <span class="text-success">{{stock.price}}</span></p>
