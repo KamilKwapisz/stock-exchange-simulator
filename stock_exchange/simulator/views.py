@@ -185,8 +185,15 @@ class StockSellFormView(FormView):
 
 def account_view(request):
     account = Account.objects.get(owner=request.user)
+    stocks_number = 0
+    stocks_value = 0.0
+    for wallet in account.wallets.all():
+        stocks_number += wallet.number
+        stocks_value += wallet.amount
     context = {
         'account': account,
+        'stocks_number': stocks_number,
+        'stocks_value': stocks_value,
     }
     return render(request, 'account.html', context)
 
