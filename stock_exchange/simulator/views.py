@@ -20,7 +20,31 @@ from .utils import save_wallets, sell_stocks
 
 
 def index(request):
-    return render(request, 'index.html', {})
+    context = {}
+
+    transactions = Transaction.objects.filter(
+        user=request.user
+    ).order_by('-timestamp')
+
+    up_tendention_stocks = Stock.objects.filter(tendention="up").order_by('-price')[:6]
+
+    account = Account.objects.get(owner=request.user)
+
+    stocks_number = 0
+    stocks_value = 0.0
+    for wallet in account.wallets.all():
+        stocks_number += wallet.number
+        stocks_value += wallet.amount
+
+    context['transactions'] = transactions[:5]
+    context['transactions_count'] = transactions[:5].count()
+    context['up_tendention_stocks'] = up_tendention_stocks
+    context['balance'] = account.balance
+    context['transaction_fee'] = account.transaction_fee
+    context['transaction_minimal_fee'] = account.transaction_minimal_fee
+    context['stocks_number'] = stocks_number
+    context['stocks_value'] = stocks_value
+    return render(request, 'index.html', context)
 
 
 def stock_data(request):
