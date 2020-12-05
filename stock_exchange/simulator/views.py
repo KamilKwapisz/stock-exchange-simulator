@@ -138,7 +138,7 @@ class StockBuyFormView(FormView):
         messages.add_message(
             self.request,
             messages.SUCCESS, 
-            f"Pomyślnie zakupiono {number} akcji/e firmy {stock.name}."
+            f"Pomyślnie zakupiono {number} akcji/e firmy {stock.name}. Koszt: {amount}"
         )
         return super().form_valid(form)
 
@@ -197,7 +197,7 @@ class StockSellFormView(FormView):
         messages.add_message(
             self.request,
             messages.SUCCESS, 
-            f"Pomyślnie sprzedano {number} akcji/e firmy {stock.name}."
+            f"Pomyślnie sprzedano {number} akcji/e firmy {stock.name}. Przychód ze sprzedaży: {amount}"
         )
 
         return super().form_valid(form)
