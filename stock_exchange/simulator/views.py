@@ -1,7 +1,11 @@
+import os
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
 from django.views.generic.detail import DetailView
@@ -202,7 +206,7 @@ def logout_view(request):
 
 
 class ChargeAccountView(LoginRequiredMixin, FormView):
-    template_name = 'charge2.html'
+    template_name = 'charge.html'
     form_class = AccoutChargeForm
     success_url = '/account'
 
@@ -214,3 +218,15 @@ class ChargeAccountView(LoginRequiredMixin, FormView):
         account.balance += money
         account.save()
         return super().form_valid(form)
+
+
+def download_stock_data(request):
+    stock_data_filename = "stock_data.csv"
+    file_path = os.path.join(settings.MEDIA_ROOT, stock_data_filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as csv_file:
+            response = HttpResponse(csv_file.read(), content_type="application/csv")
+            response['Content-Disposition'] = f"attachment;filename={stock_data_filename}"
+            return response
+    else:
+        raise Http404
