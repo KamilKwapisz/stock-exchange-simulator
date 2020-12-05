@@ -167,7 +167,12 @@ class StockSellFormView(FormView):
         try:
             sell_stocks(wallet, number)
         except ValueError:
-            return super().form_invalid(form)
+            messages.add_message(
+                self.request,
+                messages.WARNING, 
+                f"Nie możesz sprzedać więcej akcji niż posiadasz w portfelu inwestycyjnym."
+            )
+            return redirect(reverse('simulator:account'))
 
         fee = account.calculate_fee(amount)
         amount -= fee
