@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -19,8 +20,13 @@ def index(request):
 
 
 def stock_data(request):
-    stock_data = Stock.objects.all()
-    return render(request, 'stock_data.html', {'stock_data': stock_data})
+    stock_data = Stock.objects.all().order_by('name')
+    account = Account.objects.get(owner=request.user)
+    context = {
+        'stock_data': stock_data,
+        'balance': account.balance
+    }
+    return render(request, 'stock_data.html', context)
 
 
 class StockDetail(DetailView):
@@ -33,7 +39,7 @@ class StockDetail(DetailView):
         stock = Stock.objects.get(name=self.kwargs['name'])
         return stock
 
-    def get_historical_data(self):
+    def __get_historical_data(self):
         historical_data = StockHistory.objects.filter(stock=self.object)
         return historical_data
     
@@ -45,7 +51,16 @@ class StockDetail(DetailView):
         account = Account.objects.get(owner=self.request.user)
         context['balance'] = account.balance
 
-        context['historical_data'] = self.get_historical_data()
+        try:
+            wallet = account.wallets.get(stock=self.object.pk)
+        except Wallet.DoesNotExist:
+            context['stocks_in_wallet'] = 0
+            context['stocks_value'] = 0
+        else:
+            context['stocks_in_wallet'] = wallet.number
+            context['stocks_value'] = wallet.amount
+
+        context['historical_data'] = self.__get_historical_data()
         return context
 
 
@@ -68,7 +83,12 @@ class StockBuyFormView(FormView):
 
         amount = number * stock.price
         if amount > account.balance:
-            return super().form_invalid(form)
+            messages.add_message(
+                self.request,
+                messages.WARNING, 
+                "Brak wystarczających środków na końcie."
+            )
+            return redirect(reverse('simulator:stock_detail', kwargs={'name': stock.name}))
         
         save_wallets(account, stock, number, stoploss)
 
@@ -133,15 +153,21 @@ class StockSellFormView(FormView):
 
 def account_view(request):
     account = Account.objects.get(owner=request.user)
+    context = {
+        'account': account,
+    }
+    return render(request, 'account.html', context)
+
+
+def transaction_history_view(request):
     transactions = Transaction.objects.filter(
         user=request.user
     ).order_by('-timestamp')
     
     context = {
-        'account': account,
         'transactions': transactions
     }
-    return render(request, 'account.html', context)
+    return render(request, 'transaction_history.html', context)
 
 
 class RegisterView(View):
@@ -163,7 +189,7 @@ class RegisterView(View):
             user.save()
             login(self.request, user)
 
-            return redirect(reverse('index'))
+            return redirect(reverse('simulator:index'))
         elif form.cleaned_data['password'] != form.cleaned_data['password_confirm']:
             form.add_error('password_confirm', 'Passwords do not match')
 
@@ -176,7 +202,7 @@ def logout_view(request):
 
 
 class ChargeAccountView(LoginRequiredMixin, FormView):
-    template_name = 'charge.html'
+    template_name = 'charge2.html'
     form_class = AccoutChargeForm
     success_url = '/account'
 

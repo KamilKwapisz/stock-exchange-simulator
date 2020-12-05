@@ -1,33 +1,74 @@
-{% block body %}
+{% extends 'base.html' %}
+{% load static %}
 
-<h1>Twoje konto</h1>
-<p>Saldo: <b>{{account.balance}}</b>
-  <a href="{% url 'simulator:charge_account' %}">Doładuj konto</a>
-</p>
+{% block content %}
 
 
-{% if account.wallets.all %}
-<p>Twoje akcje:</p>
-<ul>
-  {% for wallet in account.wallets.all %}
-    <li>{{ wallet }}  <a href="{% url 'simulator:sell_stock' wallet.pk %}">Sprzedaj</a></li> 
-  {% endfor %}
-</ul>
-{% else %}
-<p>Brak akcji</p>
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
 
-{% endif %}
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2 text-gray-800">Posiadane akcje</h1>
+                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
+                        For more information about DataTables, please visit the <a target="_blank"
+                            href="https://datatables.net">official DataTables documentation</a>.</p>
 
-{% if transactions %}
-<h2>Historia transakcji</h2>
-<ul>
-  {% for transaction in transactions %}
-    <li>
-        [{{transaction.get_operation_display }}] {{transaction.stocks_number}} akcji {{transaction.stock.short_name}} --> {{transaction.amount}}
-    </li>
-  {% endfor %}
-</ul>
-{% endif %}
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Posiadane akcje</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Logo</th>
+                                            <th>Nazwa</th>
+                                            <th>Liczba akcji</th>
+                                            <th>Cena</th>
+                                            <th>Wartość</th>
+                                            <th>Stoploss</th>
+                                            <th>Czynności</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Logo</th>
+                                            <th>Nazwa</th>
+                                            <th>Liczba akcji</th>
+                                            <th>Cena</th>
+                                            <th>Wartość</th>
+                                            <th>Stoploss</th>
+                                            <th>Czynności</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        {% for wallet in account.wallets.all %}
+                                        <tr>
+                                            <td><img src="{% static 'simulator/img/stock_logos/'|add:wallet.stock.logo_filename %}" width="50" height="50" class="img-thumbnail border-0 rounded float-left"></td>
+                                            <!-- <td><img src="https://dummyimage.com/50" class="img-thumbnail border-0 rounded float-left"></td> -->
+                                            <td>{{ wallet.stock.name }} <sub>{{ wallet.stock.short_name }}</sub></td>
+                                            <td>{{ wallet.number }}</td>
+                                            <td>{{ wallet.stock.price }}</td>
+                                            <td>{{ wallet.amount }}</td>
+                                            <td>{{ wallet.stoploss }}</td>
+                                            <td>
+                                              <a href="{% url 'simulator:sell_stock' wallet.pk %}" class="btn btn-sm btn-danger">SPRZEDAJ</a>
+                                              <a href="{% url 'simulator:stock_detail' wallet.stock.name %}" class="btn btn-sm btn-success">KUP</a>
+                                            </td>
+                                        </tr>
 
-<a href="{% url 'simulator:stock_data' %}">Kup akcje!</a>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
 {% endblock %}
