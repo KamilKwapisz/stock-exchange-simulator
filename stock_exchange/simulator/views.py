@@ -96,14 +96,16 @@ class StockBuyFormView(FormView):
         
         save_wallets(account, stock, number, stoploss)
 
-        amount += account.calculate_fee(amount)
+        fee = account.calculate_fee(amount)
+        amount += fee
 
         transaction = Transaction(
             user=self.request.user,
             stock=stock,
             operation="buy",
             stocks_number=number,
-            stock_price=stock.price
+            stock_price=stock.price,
+            fee=fee
         )
         transaction.save()
 
@@ -138,7 +140,8 @@ class StockSellFormView(FormView):
         except ValueError:
             return super().form_invalid(form)
 
-        amount -= account.calculate_fee(amount)
+        fee = account.calculate_fee(amount)
+        amount -= fee
 
         account.balance += amount
         account.save()
@@ -148,7 +151,8 @@ class StockSellFormView(FormView):
             stock=stock,
             operation="sell",
             stocks_number=number,
-            stock_price=stock.price
+            stock_price=stock.price,
+            fee=fee
         )
         transaction.save()
 

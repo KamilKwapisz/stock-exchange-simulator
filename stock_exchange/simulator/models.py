@@ -57,6 +57,7 @@ class Transaction(models.Model):
     operation = models.CharField(max_length=4, choices=OPERATIONS)
     stocks_number = models.IntegerField()
     stock_price = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN')
+    fee = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN', blank=True, null=True)
 
     @property
     def amount(self):
