@@ -13,6 +13,24 @@
                         For more information about DataTables, please visit the <a target="_blank"
                             href="https://datatables.net">official DataTables documentation</a>.</p>
 
+
+                            {% if messages %}
+                            {% for message in messages %}
+                                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR or message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {% else %}
+                                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                                    {% endif %}
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                            {% endfor %}
+                            {% endif %}
+
                             <div class="row">
 
                                 <div class="col-xl-3 col-md-6 mb-4">
