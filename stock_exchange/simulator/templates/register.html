@@ -1,9 +1,77 @@
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Zarejestruj się</button>
-</form>
+{% load static %}
+{% include 'base_head.html' %}
 
-{% endblock %}
+{% block title %}Zarejestruj się{% endblock %}
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                    <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Utwórz konto, aby grać na wirtualnej giełdzie!</h1>
+                            </div>
+                            <form class="user" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input type="email" class="form-control form-control-user" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
+                                        placeholder="Adres email...">
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input type="password" class="form-control form-control-user"
+                                        name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}" placeholder="Hasło...">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="password" class="form-control form-control-user"
+                                        name="{{ form.password_confirm.html_name }}" id="{{ form.password_confirm.id_for_label }}" placeholder="Powtórz hasło...">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-user btn-block">
+                                    Utwórz konto
+                                </button>
+                                <hr>
+                                <a href="index.html" class="btn btn-google btn-user btn-block">
+                                    <i class="fab fa-google fa-fw"></i> Zarejestruj się kontem Google
+                                </a>
+                                <a href="index.html" class="btn btn-facebook btn-user btn-block">
+                                    <i class="fab fa-facebook-f fa-fw"></i>  Zarejestruj się kontem Facebook
+                                </a>
+                            </form>
+                            <hr>
+                            <div class="text-center">
+                                <a href="forgot-password.html">Zapomniałeś hasła?</a>
+                            </div>
+                            <div class="text-center">
+                                <a href="{% url 'simulator:login' %}">Masz już konto? Zaloguj się!</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>
