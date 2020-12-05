@@ -135,6 +135,11 @@ class StockBuyFormView(FormView):
 
         account.balance -= amount
         account.save()
+        messages.add_message(
+            self.request,
+            messages.SUCCESS, 
+            f"Pomyślnie zakupiono {number} akcji/e firmy {stock.name}."
+        )
         return super().form_valid(form)
 
 
@@ -179,6 +184,12 @@ class StockSellFormView(FormView):
             fee=fee
         )
         transaction.save()
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS, 
+            f"Pomyślnie sprzedano {number} akcji/e firmy {stock.name}."
+        )
 
         return super().form_valid(form)
 
@@ -289,4 +300,9 @@ class StockSettingsFormView(FormView):
         account.transaction_fee = transaction_fee
         account.transaction_minimal_fee = transaction_minimal_fee
         account.save()
+        messages.add_message(
+            self.request,
+            messages.SUCCESS, 
+            "Pomyślnie zaktualizowano dane."
+        )
         return super().form_valid(form)
