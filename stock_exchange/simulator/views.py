@@ -114,7 +114,7 @@ class StockBuyFormView(FormView):
             messages.add_message(
                 self.request,
                 messages.WARNING, 
-                "Brak wystarczających środków na końcie."
+                "Brak wystarczających środków na koncie."
             )
             return redirect(reverse('simulator:stock_detail', kwargs={'name': stock.name}))
         
