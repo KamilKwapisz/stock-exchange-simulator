@@ -20,5 +20,6 @@ urlpatterns = [
     path('transaction-history', views.transaction_history_view, name='transaction-history'),
     path('charge-account', views.ChargeAccountView.as_view(), name='charge_account'),
     path('download/stock', views.download_stock_data, name='download_stock_data'),
+    path('settings', views.StockSettingsFormView.as_view(), name='settings'),
 
 ]

@@ -14,9 +14,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 from djmoney.money import Money
 
-from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm
+from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm, StockSettingsForm
 from .models import Account, Stock, StockHistory, Wallet, Transaction
-from .utils import save_wallets, calculate_fee, sell_stocks
+from .utils import save_wallets, sell_stocks
 
 
 def index(request):
@@ -96,14 +96,16 @@ class StockBuyFormView(FormView):
         
         save_wallets(account, stock, number, stoploss)
 
-        amount += calculate_fee(amount)
+        fee = account.calculate_fee(amount)
+        amount += fee
 
         transaction = Transaction(
             user=self.request.user,
             stock=stock,
             operation="buy",
             stocks_number=number,
-            stock_price=stock.price
+            stock_price=stock.price,
+            fee=fee
         )
         transaction.save()
 
@@ -138,7 +140,8 @@ class StockSellFormView(FormView):
         except ValueError:
             return super().form_invalid(form)
 
-        amount -= calculate_fee(amount)
+        fee = account.calculate_fee(amount)
+        amount -= fee
 
         account.balance += amount
         account.save()
@@ -148,7 +151,8 @@ class StockSellFormView(FormView):
             stock=stock,
             operation="sell",
             stocks_number=number,
-            stock_price=stock.price
+            stock_price=stock.price,
+            fee=fee
         )
         transaction.save()
 
@@ -230,3 +234,28 @@ def download_stock_data(request):
             return response
     else:
         raise Http404
+
+
+class StockSettingsFormView(FormView):
+    form_class = StockSettingsForm
+    success_url = '/account'
+    template_name = 'settings.html'
+
+    def get_context_data(self, **kwargs):
+        # TODO REFACTOR
+        context = super(StockSettingsFormView, self).get_context_data(**kwargs)
+        account = Account.objects.get(owner=self.request.user)
+        context['transaction_fee'] = str(account.transaction_fee).replace(',', '.')
+        context['transaction_minimal_fee'] = str(account.transaction_minimal_fee.amount).replace(',', '.')
+        return context
+
+    def form_valid(self, form):
+        account = Account.objects.get(owner=self.request.user)
+
+        transaction_fee = form.cleaned_data.get('transaction_fee')
+        transaction_minimal_fee = form.cleaned_data.get('transaction_minimal_fee')
+
+        account.transaction_fee = transaction_fee
+        account.transaction_minimal_fee = transaction_minimal_fee
+        account.save()
+        return super().form_valid(form)
