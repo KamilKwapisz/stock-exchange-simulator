@@ -13,21 +13,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         stock_data = self.__read_file(options['filename'])
+        latest_price = 0.0
         for row in stock_data:
             try:
                 company_name = row.get('name')
                 stock = Stock.objects.get(name=company_name)
+                latest_price = stock.price
             except Stock.DoesNotExist:
                 stock = Stock.objects.create(
                     name=company_name,
                     short_name=row.get('short_name'),
-                    price=row.get('price')
+                    price=row.get('price'),
+                    tendention='up'
                 )
             else:
                 stock.price = row.get('price')
+                stock.tendention = 'up' if stock.price > latest_price else 'down'
             finally:
                 stock.save()
-                # saving stock history
                 save_stock_history(stock)
 
         self.stdout.write(self.style.SUCCESS(f"Successfully updated {len(stock_data)} stock data"))
