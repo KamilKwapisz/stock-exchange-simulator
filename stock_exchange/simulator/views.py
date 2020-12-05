@@ -114,7 +114,7 @@ class StockBuyFormView(FormView):
             messages.add_message(
                 self.request,
                 messages.WARNING, 
-                "Brak wystarczających środków na końcie."
+                "Brak wystarczających środków na koncie."
             )
             return redirect(reverse('simulator:stock_detail', kwargs={'name': stock.name}))
         
@@ -135,6 +135,11 @@ class StockBuyFormView(FormView):
 
         account.balance -= amount
         account.save()
+        messages.add_message(
+            self.request,
+            messages.SUCCESS, 
+            f"Pomyślnie zakupiono {number} akcji/e firmy {stock.name}."
+        )
         return super().form_valid(form)
 
 
@@ -162,7 +167,12 @@ class StockSellFormView(FormView):
         try:
             sell_stocks(wallet, number)
         except ValueError:
-            return super().form_invalid(form)
+            messages.add_message(
+                self.request,
+                messages.WARNING, 
+                f"Nie możesz sprzedać więcej akcji niż posiadasz w portfelu inwestycyjnym."
+            )
+            return redirect(reverse('simulator:account'))
 
         fee = account.calculate_fee(amount)
         amount -= fee
@@ -179,6 +189,12 @@ class StockSellFormView(FormView):
             fee=fee
         )
         transaction.save()
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS, 
+            f"Pomyślnie sprzedano {number} akcji/e firmy {stock.name}."
+        )
 
         return super().form_valid(form)
 
@@ -289,4 +305,9 @@ class StockSettingsFormView(FormView):
         account.transaction_fee = transaction_fee
         account.transaction_minimal_fee = transaction_minimal_fee
         account.save()
+        messages.add_message(
+            self.request,
+            messages.SUCCESS, 
+            "Pomyślnie zaktualizowano dane."
+        )
         return super().form_valid(form)

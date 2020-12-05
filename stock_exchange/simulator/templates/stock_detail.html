@@ -110,7 +110,13 @@
                     {% for message in messages %}
                     <div class="row">
                         <div class="col-xl-12 col-md-6 mb-4">
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR or message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
                             <div class="card border-left-danger shadow h-100 py-2">
+                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                            <div class="card border-left-success shadow h-100 py-2">
+                            {% else %}
+                            <div class="card border-left-primary shadow h-100 py-2"></div>
+                            {% endif %}
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
@@ -119,7 +125,14 @@
                                             <div class="h5 mb-0 font-weight-bold text-gray-800 text-center">{{ message }}</div>
                                         </div>
                                         <div class="col-auto">
+                                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR or message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
                                             <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                                            <i class="fas fa-check-square fa-2x text-success"></i>
+                                            {% else %}
+                                            <i class="fas fa-info fa-2x text-primary"></i>
+                                            {% endif %}
+                                            
                                         </div>
                                     </div>
                                 </div>
