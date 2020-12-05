@@ -19,5 +19,6 @@ urlpatterns = [
     path('account', views.account_view, name='account'),
     path('transaction-history', views.transaction_history_view, name='transaction-history'),
     path('charge-account', views.ChargeAccountView.as_view(), name='charge_account'),
+    path('download/stock', views.download_stock_data, name='download_stock_data'),
 
 ]
