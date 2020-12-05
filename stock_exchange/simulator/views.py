@@ -138,7 +138,7 @@ class StockBuyFormView(FormView):
         messages.add_message(
             self.request,
             messages.SUCCESS, 
-            f"Pomyślnie zakupiono {number} akcji/e firmy {stock.name}."
+            f"Pomyślnie zakupiono {number} akcji/e firmy {stock.name}. Koszt: {amount}"
         )
         return super().form_valid(form)
 
@@ -150,7 +150,11 @@ class StockSellFormView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(StockSellFormView, self).get_context_data(**kwargs)
-        context['wallet_pk'] = self.kwargs['wallet_pk']
+        wallet_pk = self.kwargs['wallet_pk']
+        wallet = Wallet.objects.get(pk=wallet_pk)
+        context['wallet_pk'] = wallet_pk
+        context['stock_name'] = wallet.stock.name
+        context['stocks_number'] = wallet.number
         return context
 
     def form_valid(self, form):
@@ -193,7 +197,7 @@ class StockSellFormView(FormView):
         messages.add_message(
             self.request,
             messages.SUCCESS, 
-            f"Pomyślnie sprzedano {number} akcji/e firmy {stock.name}."
+            f"Pomyślnie sprzedano {number} akcji/e firmy {stock.name}. Przychód ze sprzedaży: {amount}"
         )
 
         return super().form_valid(form)
