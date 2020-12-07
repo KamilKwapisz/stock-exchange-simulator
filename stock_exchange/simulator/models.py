@@ -31,12 +31,12 @@ class Stock(models.Model):
     TENDENTION = [
        ("up", _('Price going up')),
        ("down", _('Price goin down')),
-   ]
+    ]
 
     name = models.CharField(max_length=256)
     short_name = models.CharField(max_length=8)
     price = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN')
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField()
     logo_filename = models.CharField(max_length=64, blank=True, null=True)
     logo_path = models.CharField(max_length=64, blank=True, null=True)
     tendention = models.CharField(choices=TENDENTION, max_length=32, default="up")
@@ -82,7 +82,7 @@ class Wallet(models.Model):
 
 class StockHistory(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField()
     price = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN')
 
     class Meta:

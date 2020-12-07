@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.core.management.base import BaseCommand, CommandError
+from django.utils import timezone
 
 from simulator.models import Stock
 from simulator.utils import save_stock_history
@@ -30,6 +33,10 @@ class Command(BaseCommand):
                 stock.price = row.get('price')
                 stock.tendention = 'up' if stock.price > latest_price else 'down'
             finally:
+                if row.get('datetime'):
+                    stock.timestamp = datetime.strptime(row.get('datetime'), "%Y-%m-%d")
+                else:
+                    stock.timestamp = timezone.now()
                 stock.save()
                 save_stock_history(stock)
 
