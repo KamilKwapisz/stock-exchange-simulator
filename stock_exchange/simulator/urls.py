@@ -22,4 +22,6 @@ urlpatterns = [
     path('download/stock', views.download_stock_data, name='download_stock_data'),
     path('settings', views.StockSettingsFormView.as_view(), name='settings'),
 
+    path('ajax/stock_historical_data_chart', views.stock_historical_data_chart, name='stock_historical_data'),
+
 ]
