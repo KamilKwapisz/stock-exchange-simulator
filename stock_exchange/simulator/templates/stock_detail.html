@@ -250,19 +250,19 @@
                             </div>
                             <!-- Card Body -->
                             <div class="card-body">
-                                <div class="chart-area">
+                                <div class="chart-area" id="stockChartContainer">
                                     <!-- <canvas id="myAreaChart"></canvas> -->
                                     <canvas id="stockDetailChart" data-url="{% url 'simulator:stock_historical_data' %}"></canvas>
                                 </div>
                                 <div class="row">
-                                    <div class="col-1 p-3 mx-4 text-center"><a href="" class="btn btn-primary">10d</a></div>
-                                    <div class="col-1 p-3 ml-5 text-center"><a href="#" class="btn btn-primary">1m</a></div>
-                                    <div class="col-1 p-3 ml-5 text-center"><a href="#" class="btn btn-primary">3m</a></div>
-                                    <div class="col-1 p-3 ml-5 text-center"><a href="#" class="btn btn-primary">6m</a></div>
-                                    <div class="col-1 p-3 ml-5 text-center"><a href="#" class="btn btn-primary">1r</a></div>
-                                    <div class="col-1 p-3 ml-5 text-center"><a href="#" class="btn btn-primary">3r</a></div>
-                                    <div class="col-1 p-3 ml-5 text-center"><a href="#" class="btn btn-primary">5r</a></div>
-                                    
+                                    <div class="col-1 p-3 mx-4 text-center"><a href="javascript:void(0);" onclick="updateChart('10d')" class="btn btn-primary">10d</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('1m')" class="btn btn-primary">1m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('3m')" class="btn btn-primary">3m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('6m')" class="btn btn-primary">6m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('1y')" class="btn btn-primary">1r</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('3y')" class="btn btn-primary">3l</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('5y')" class="btn btn-primary">5l</a></div>
+                                    <!-- TODO: clearing canvas -->
                                 </div>
                             </div>
                             
@@ -353,16 +353,37 @@
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 
-$(function () {
+// $();
+$(document).ready(function() {
+    updateChart("1m");
+});
+
+// function clearCanvas() {
+//     $('#stockDetailChart').remove();
+//     $('#stockChartContainer').append(<canvas id="stockDetailChart" data-url="{% url 'simulator:stock_historical_data' %}"></canvas>);
+// }
+
+function updateChart(link) {
 
 var $stockDetailChart = $("#stockDetailChart");
+let dateRange;
+console.log(link);
+
+// try {
+//     dateRange = link.value;
+//     console.log(dateRange);
+// } catch (error) {
+//     console.log(error);
+//     dateRange = "1m"
+// }
 
 $.ajax({
   url: $stockDetailChart.data("url"),
-  data: { ticker_symbol: "{{object.short_name}}", date_range : "10d"},
+  data: { ticker_symbol: "{{object.short_name}}", date_range : link},
   success: function (data) {
 
     var ctx = document.getElementById("stockDetailChart");
+    // clearCanvas();
     new Chart(ctx, {
   type: 'line',
   data: {
@@ -454,8 +475,7 @@ $.ajax({
   }
 });
 
-});
-
+}
 
 
 </script>
