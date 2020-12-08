@@ -2,42 +2,38 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
+from django.utils.timezone import get_current_timezone
 
 from simulator.models import Stock
 from simulator.utils import save_stock_history
 
 
 class Command(BaseCommand):
-    help = 'Update stock data'
+    help = 'Update stock historical data'
 
     def add_arguments(self, parser):
-        DEFAULT_FILENAME = "stock_data.csv"
+        DEFAULT_FILENAME = "stock_history_data.csv"
         parser.add_argument('filename', type=str, nargs='?', default=DEFAULT_FILENAME)
 
     def handle(self, *args, **options):
         stock_data = self.__read_file(options['filename'])
         latest_price = 0.0
+        counter = 0
         for row in stock_data:
             try:
-                company_name = row.get('name')
-                stock = Stock.objects.get(name=company_name)
-                latest_price = stock.price
+                ticker_symbol = row.get('short_name')
+                stock = Stock.objects.get(short_name=ticker_symbol.upper())
             except Stock.DoesNotExist:
-                stock = Stock.objects.create(
-                    name=company_name,
-                    short_name=row.get('short_name'),
-                    price=row.get('price'),
-                    tendention='up',
-                    timestamp=timezone.now()
-                )
+                print(ticker_symbol)
+                continue
             else:
                 stock.price = row.get('price')
-                stock.tendention = 'up' if stock.price > latest_price else 'down'
-            finally:
-                stock.save()
+                stock.timestamp = datetime.strptime(row.get('datetime'), "%Y-%m-%d")
                 save_stock_history(stock)
+                counter += 1
+                print(counter)
 
-        self.stdout.write(self.style.SUCCESS(f"Successfully updated {len(stock_data)} stock data"))
+        self.stdout.write(self.style.SUCCESS(f"Successfully updated {counter} stock data in history"))
 
     def __read_file(self, filename):
         try:
@@ -53,14 +49,14 @@ class Command(BaseCommand):
         stock_data = list()
         for row in data:
             row = row.rstrip()
-            short_name, name, price = row.split(",")
+            short_name, date, price = row.split(",")
             try:
                 price = float(price)
             except ValueError:
                 raise CommandError(f"Niepoprawny format ceny akcji.")
             else:
                 stock_details = {
-                    'name': name,
+                    'datetime': date,
                     'short_name': short_name,
                     'price': price
                 }
