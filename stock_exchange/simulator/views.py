@@ -1,11 +1,12 @@
 import os
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.generic import View
 from django.views.generic.detail import DetailView
@@ -67,10 +68,6 @@ class StockDetail(DetailView):
         stock = Stock.objects.get(name=self.kwargs['name'])
         return stock
 
-    def __get_historical_data(self):
-        historical_data = StockHistory.objects.filter(stock=self.object)
-        return historical_data
-    
     def get_context_data(self, **kwargs):
         context = super(StockDetail, self).get_context_data(**kwargs)
         context['form'] = StockBuyForm()
@@ -88,8 +85,44 @@ class StockDetail(DetailView):
             context['stocks_in_wallet'] = wallet.number
             context['stocks_value'] = wallet.amount
 
-        context['historical_data'] = self.__get_historical_data()
         return context
+
+
+def stock_historical_data_chart(request):
+    DATE_FORMAT = "%Y-%m-%d"
+    ticker_symbol = request.GET.get('ticker_symbol', None)
+    date_range = request.GET.get('date_range', '1m')
+    end_date = datetime.today()
+    TIME_DELTAS = {
+        '10d': timedelta(days=10),
+        '1m': timedelta(days=30),
+        '3m': timedelta(days=90),
+        '6m': timedelta(days=180),
+        '1y': timedelta(days=365),
+        '3y': timedelta(days=365 * 3),
+        '5y': timedelta(days=365 * 5),
+    }
+    start_date = end_date - TIME_DELTAS.get(date_range)
+
+    data = StockHistory.objects.filter(
+        stock__short_name=ticker_symbol.upper(),
+        timestamp__range=[
+            start_date.strftime(DATE_FORMAT),
+            end_date.strftime(DATE_FORMAT)
+        ]
+    ).values_list('timestamp', 'price')
+
+    dates = []
+    prices = []
+
+    for date, price in data:
+        prices.append(float(price))
+        dates.append(date.strftime('%d-%m-%Y'))
+
+    return JsonResponse(data={
+        'labels': dates,
+        'data': prices,
+    })
 
 
 class StockBuyFormView(FormView):

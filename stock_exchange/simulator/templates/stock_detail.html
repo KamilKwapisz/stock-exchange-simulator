@@ -250,10 +250,22 @@
                             </div>
                             <!-- Card Body -->
                             <div class="card-body">
-                                <div class="chart-area">
-                                    <canvas id="myAreaChart"></canvas>
+                                <div class="chart-area" id="stockChartContainer">
+                                    <!-- <canvas id="myAreaChart"></canvas> -->
+                                    <canvas id="stockDetailChart" data-url="{% url 'simulator:stock_historical_data' %}"></canvas>
+                                </div>
+                                <div class="row">
+                                    <div class="col-1 p-3 mx-4 text-center"><a href="javascript:void(0);" onclick="updateChart('10d')" class="btn btn-primary">10d</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('1m')" class="btn btn-primary">1m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('3m')" class="btn btn-primary">3m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('6m')" class="btn btn-primary">6m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('1y')" class="btn btn-primary">1r</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('3y')" class="btn btn-primary">3l</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('5y')" class="btn btn-primary">5l</a></div>
+                                    <!-- TODO: clearing canvas -->
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -335,28 +347,135 @@
 
             </div>
             <!-- End of Main Content -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+Chart.defaults.global.defaultFontColor = '#858796';
+
+// $();
+$(document).ready(function() {
+    updateChart("1m");
+});
+
+function clearCanvas() {
+    $('#stockDetailChart').remove();
+    $('#stockChartContainer').append("<canvas id=\"stockDetailChart\" data-url=\"{% url 'simulator:stock_historical_data' %}\"></canvas>");
+}
+
+function updateChart(dateRange) {
+
+var $stockDetailChart = $("#stockDetailChart");
+
+
+$.ajax({
+  url: $stockDetailChart.data("url"),
+  data: { ticker_symbol: "{{object.short_name}}", date_range : dateRange},
+  success: function (data) {
+    clearCanvas();
+
+    var ctx = document.getElementById("stockDetailChart");
+    // clearCanvas();
+    new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: data.labels,
+    datasets: [{
+      label: "cena",
+      lineTension: 0.2,
+      backgroundColor: "rgba(78, 115, 223, 0.05)",
+      borderColor: "rgba(78, 115, 223, 1)",
+      pointRadius: 1,
+      pointBackgroundColor: "rgba(78, 115, 223, 1)",
+      pointBorderColor: "rgba(78, 115, 223, 1)",
+      pointHoverRadius: 3,
+      pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+      pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+      pointHitRadius: 1,
+      pointBorderWidth: 1,
+      data: data.data,
+    }],
+  },
+  options: {
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        left: 10,
+        right: 25,
+        top: 25,
+        bottom: 0
+      }
+    },
+    scales: {
+      xAxes: [{
+        time: {
+          unit: 'date'
+        },
+        gridLines: {
+          display: false,
+          drawBorder: false
+        },
+        ticks: {
+          maxTicksLimit: 19
+        }
+      }],
+      yAxes: [{
+        ticks: {
+          maxTicksLimit: 6,
+          padding: 10,
+          callback: function(value, index, values) {
+            return value;
+          }
+        },
+        gridLines: {
+          color: "rgb(234, 236, 244)",
+          zeroLineColor: "rgb(234, 236, 244)",
+          drawBorder: false,
+          borderDash: [2],
+          zeroLineBorderDash: [2]
+        }
+      }],
+    },
+    legend: {
+      display: false
+    },
+    tooltips: {
+      backgroundColor: "rgb(255,255,255)",
+      bodyFontColor: "#858796",
+      titleMarginBottom: 10,
+      titleFontColor: '#6e707e',
+      titleFontSize: 14,
+      borderColor: '#dddfeb',
+      borderWidth: 1,
+      xPadding: 15,
+      yPadding: 15,
+      displayColors: false,
+      intersect: false,
+      mode: 'index',
+      caretPadding: 15,
+      callbacks: {
+        label: function(tooltipItem, chart) {
+          var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+          return datasetLabel + ':' + tooltipItem.yLabel + ' PLN';
+        }
+      }
+    }
+  }
+});
+    
+
+  }
+});
+
+}
+
+
+</script>
 {% endblock %}
 {% block scripts %}
 <script>
-    function validateBuyForm(form){
-    console.log(form);
-    let stocksNumber = document.getElementById("id_number").value;
-    console.log(stocksNumber);
-    try {
-        stocksNumber = parseInt(stocksNumber)
-    } catch (error) {
-        return false;
-    }
-    let price = {{ object.price }};
-    let balance = {{ balance }};
-    console.log(price);
-    console.log(balance);
-    if (price * stocksNumber > balance) {
-        return false;
-    } else {
-        return true;
-    }
-}
+
+
 </script>
 
 {% endblock %}
