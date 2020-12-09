@@ -52,7 +52,15 @@
                                             <div class="card-body">
                                                 <form method="post" action="{% url 'simulator:buy_stock' %}" onsubmit="validateBuyForm(this);">
                                                     {% csrf_token %}
-                                                    {{ form.as_p }}
+                                                    <p>
+                                                        <label for="{{form.number.id_for_label}}">Liczba akcji do kupienia:</label>
+                                                        <input type="number" name="{{form.number.html_name}}" min="1" max="1000000" required id="{{form.number.id_for_label}}">
+                                                    </p>
+                                                    <p>
+                                                        <label for="{{form.stoploss.id_for_label}}">Stoploss:</label>
+                                                        <input type="number" name="{{form.stoploss.html_name}}" step="0.01" id="{{form.stoploss.id_for_label}}">
+                                                        <input type="hidden" name="{{form.stock_pk.html_name}}" value="{{form.stock_pk.value}}" id="{{form.stock_pk.id_for_label}}">
+                                                    </p>
                                                     <button type="submit" class="btn-success">Kup akcje!</button>
                                                 </form>
                                             </div>
