@@ -358,29 +358,21 @@ $(document).ready(function() {
     updateChart("1m");
 });
 
-// function clearCanvas() {
-//     $('#stockDetailChart').remove();
-//     $('#stockChartContainer').append(<canvas id="stockDetailChart" data-url="{% url 'simulator:stock_historical_data' %}"></canvas>);
-// }
+function clearCanvas() {
+    $('#stockDetailChart').remove();
+    $('#stockChartContainer').append("<canvas id=\"stockDetailChart\" data-url=\"{% url 'simulator:stock_historical_data' %}\"></canvas>");
+}
 
-function updateChart(link) {
+function updateChart(dateRange) {
 
 var $stockDetailChart = $("#stockDetailChart");
-let dateRange;
-console.log(link);
 
-// try {
-//     dateRange = link.value;
-//     console.log(dateRange);
-// } catch (error) {
-//     console.log(error);
-//     dateRange = "1m"
-// }
 
 $.ajax({
   url: $stockDetailChart.data("url"),
-  data: { ticker_symbol: "{{object.short_name}}", date_range : link},
+  data: { ticker_symbol: "{{object.short_name}}", date_range : dateRange},
   success: function (data) {
+    clearCanvas();
 
     var ctx = document.getElementById("stockDetailChart");
     // clearCanvas();
