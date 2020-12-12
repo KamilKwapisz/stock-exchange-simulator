@@ -35,6 +35,7 @@ class Stock(models.Model):
 
     name = models.CharField(max_length=256)
     short_name = models.CharField(max_length=8)
+    full_name = models.CharField(max_length=256, blank=True, null=True)
     price = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN')
     timestamp = models.DateTimeField()
     logo_filename = models.CharField(max_length=64, blank=True, null=True)
