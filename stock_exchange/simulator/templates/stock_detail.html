@@ -221,17 +221,93 @@
         <!-- Area Chart -->
         <div class="row">
             <div class="col-xl-12 col-md-6 mb-4">
-                <div class="card border-left-secondary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Wiadomości o spółce {{object.name}}</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stocks_value }} </div>
+                <div class="card shadow mb-4">
+                    <!-- Card Header - Accordion -->
+                    <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
+                        role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                        <h6 class="m-0 font-weight-bold text-primary">Wiadomości o spółce {{object.full_name}}</h6>
+                    </a>
+                    <!-- Card Content - Collapse -->
+                    <div class="collapse show" id="collapseCardExample">
+                        <div class="card-body">
+                            <div class="pl-2">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h5>Tytuł artykułu</h5>
+                                    </div>
+                                    <div class="col-4">
+                                        01.02.2020
+                                    </div>
+                                </div>
+                                <div class="text-sm text-success">Nazwa portalu</div>
+                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+
+                            <div class="pl-2 pt-5">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h5>Tytuł artykułu</h5>
+                                    </div>
+                                    <div class="col-4">
+                                        01.02.2020
+                                    </div>
+                                </div>
+                                <div class="text-sm text-success">Nazwa portalu</div>
+                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
                             </div>
+
+                            <div class="pl-2 pt-5">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h5>Tytuł artykułu</h5>
+                                    </div>
+                                    <div class="col-4">
+                                        01.02.2020
+                                    </div>
+                                </div>
+                                <div class="text-sm text-success">Nazwa portalu</div>
+                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
+                            </div>
+
+                            <div class="pl-2 pt-5">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h5>Tytuł artykułu</h5>
+                                    </div>
+                                    <div class="col-4">
+                                        01.02.2020
+                                    </div>
+                                </div>
+                                <div class="text-sm text-success">Nazwa portalu</div>
+                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
+                            </div>
+
+                            <div class="pl-2 pt-5">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h5>Tytuł artykułu</h5>
+                                    </div>
+                                    <div class="col-4">
+                                        01.02.2020
+                                    </div>
+                                </div>
+                                <div class="text-sm text-success">Nazwa portalu</div>
+                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
+                            </div>
+
+                            <div class="pl-2 pt-4 text-right">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination text-right">
+                                      <li class="page-item"><a class="page-link" href="#"><</a></li>
+                                      <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                      <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                      <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                      <li class="page-item"><a class="page-link" href="#">></a></li>
+                                    </ul>
+                                  </nav>
+                            </div>
+                            
+
                         </div>
                     </div>
                 </div>
