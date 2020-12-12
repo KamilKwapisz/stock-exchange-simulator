@@ -2,32 +2,6 @@
 {% load static %}
 
 
-{% block head_scripts %}
-<script>
-    function validateBuyForm(form){
-    console.log(form);
-    let stocksNumber = document.getElementById("id_number").value;
-    console.log(stocksNumber);
-    try {
-        stocksNumber = parseInt(stocksNumber)
-    } catch (error) {
-        return false;
-    }
-    let price = {{ object.price }};
-    let balance = {{ balance }};
-    console.log(price);
-    console.log(balance);
-    if (price * stocksNumber > balance) {
-        return false;
-    } else {
-        return true;
-    }
-}
-</script>
-
-{% endblock %}
-
-
 {% block content %}
 
                 <!-- Begin Page Content -->
@@ -36,10 +10,7 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center mb-4">
                         <img src="{% static 'simulator/img/stock_logos/'|add:object.logo_filename %}" width="100" height="100" class="img-thumbnail border-0 rounded float-left">
-                        <!-- <img src="https://dummyimage.com/100" class="img-thumbnail border-0 rounded float-left"> -->
-                        <h1 class="h3 mb-0 text-gray-800 font-weight-bolder">  {{ object.name }} TODO: JS validation</h1>
-                        <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
+                        <h1 class="h3 mb-0 text-gray-800 font-weight-bolder">  {{ object.name }}</h1>
                     </div>
                     <div class="row">
                         <div class="col-xl-8">
@@ -50,7 +21,7 @@
                                                 <h6 class="m-0 font-weight-bold text-primary">Kup akcje</h6>
                                             </div>
                                             <div class="card-body">
-                                                <form method="post" action="{% url 'simulator:buy_stock' %}" onsubmit="validateBuyForm(this);">
+                                                <form method="post" id="buyForm" class="buyForm" action="{% url 'simulator:buy_stock' %}" >
                                                     {% csrf_token %}
                                                     <p>
                                                         <label for="{{form.number.id_for_label}}">Liczba akcji do kupienia:</label>
@@ -63,7 +34,13 @@
                                                     </p>
                                                     <button type="submit" class="btn-success">Kup akcje!</button>
                                                 </form>
+                                                <div class="row pt-3 pl-3">
+                                                    <p id="jsValidationError" style="display: none;">aaaa</p>
+                                                </div>
                                             </div>
+                                            
+                                        
+
                                         </div>
                                 </div>
                                 </div>
@@ -73,81 +50,40 @@
                     {% if form.errors %}
                     {% for field in form %}
                         {% for error in field.errors %}
-                        <div class="row">
-                            <div class="col-xl-12 col-md-6 mb-4">
-                                <div class="card border-left-danger shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1 text-center">
-                                                    Nie udało się kupić akcji</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800 text-center">{{ error|escape }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ error|escape }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
                         {% endfor %}
                     {% endfor %}
+
+
                     {% for error in form.non_field_errors %}
-                    <div class="row">
-                        <div class="col-xl-12 col-md-6 mb-4">
-                            <div class="card border-left-danger shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1 text-center">
-                                                Nie udało się kupić akcji</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800 text-center">{{ error|escape }}</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ error|escape }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                        </div>
-                    </div>
                     {% endfor %}
                 {% endif %}
 
                 {% if messages %}
                     {% for message in messages %}
-                    <div class="row">
-                        <div class="col-xl-12 col-md-6 mb-4">
                             {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR or message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                            <div class="card border-left-danger shadow h-100 py-2">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                            <div class="card border-left-success shadow h-100 py-2">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {% else %}
-                            <div class="card border-left-primary shadow h-100 py-2"></div>
+                            <div class="alert alert-primary alert-dismissible fade show" role="alert">
                             {% endif %}
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1 text-center">
-                                                Nie udało się kupić akcji</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800 text-center">{{ message }}</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR or message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                                            <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
-                                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                                            <i class="fas fa-check-square fa-2x text-success"></i>
-                                            {% else %}
-                                            <i class="fas fa-info fa-2x text-primary"></i>
-                                            {% endif %}
-                                            
-                                        </div>
-                                    </div>
-                                </div>
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                        </div>
-                    </div>
                     {% endfor %}
                 {% endif %}
 
@@ -358,6 +294,8 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
             <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
+
+    
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 
@@ -477,6 +415,27 @@ $.ajax({
 
 }
 
+    $('#buyForm').on('submit', function(e) {
+        e.preventDefault();
+        let stocksNumber = document.getElementById("id_number").value;
+        try {
+            stocksNumber = parseInt(stocksNumber)
+        } catch (error) {
+            return false;
+        }
+        let errorMsgBox = document.getElementById("jsValidationError");
+        let price = parseFloat("{{ object.price }}");
+        let balance = parseFloat("{{ balance }}");
+        if (price * stocksNumber > balance) {
+            errorMsgBox.innerHTML = "Niewystarczające środki na koncie.";
+            errorMsgBox.style = "display: block";
+            return false;
+        } else {
+            console.log('true')
+            errorMsgBox.style = "display: none";
+            $("#buyForm").submit()
+        }
+    });
 
 </script>
 {% endblock %}
