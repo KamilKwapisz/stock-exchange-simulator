@@ -3,6 +3,8 @@ from django.contrib.auth.views import LoginView
 from django.views.decorators.http import require_POST
 
 from . import views
+from . import api_views
+
 
 app_name = 'simulator'
 
@@ -23,5 +25,7 @@ urlpatterns = [
     path('settings', views.StockSettingsFormView.as_view(), name='settings'),
 
     path('ajax/stock_historical_data_chart', views.stock_historical_data_chart, name='stock_historical_data'),
+
+    path('api/stocks/<int:pk>', api_views.get_stock_detail, name='stock-detail-api'),
 
 ]
