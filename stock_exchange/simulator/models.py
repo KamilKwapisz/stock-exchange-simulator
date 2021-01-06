@@ -42,6 +42,9 @@ class Stock(models.Model):
     logo_path = models.CharField(max_length=64, blank=True, null=True)
     tendention = models.CharField(choices=TENDENTION, max_length=32, default="up")
 
+    def get_buy_url(self):
+        return f"http://localhost:5005/api/stocks/{self.pk}/buy"
+
     def __str__(self):
         return f"{self.name}[{self.short_name}] - {self.price}"
 
