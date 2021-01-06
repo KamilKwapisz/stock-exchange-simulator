@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'simulator',
     'djmoney',
+    'rest_framework',
 ]
 
 

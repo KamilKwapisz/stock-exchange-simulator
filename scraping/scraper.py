@@ -33,13 +33,23 @@ class StockScraper:
             cells = row('td')[:3]
             company_data = [cell.text for cell in cells]
             data.append(company_data)
-
         return data
+
+    def get_wig30_data(self) -> list:
+        self.URL = "https://stooq.pl/q/?s=wig30"
+        html = self.__get()
+        soup = BeautifulSoup(html, self.parser)
+        price = soup.find('span', {'id': 'aq_wig30_c2'}).text
+        return ["WIG30", "WIG30", price]
 
     def scrape(self, URL: str) -> list:
         self.URL = URL
         html = self.__get()
         data = self.parse(html)
+        wig30_data = self.get_wig30_data()
+        print(data)
+        print(wig30_data)
+        data.append(wig30_data)
         return data
 
 
@@ -78,6 +88,7 @@ class StockHistoryScraper:
             link = link.get('href')
             url = self.__join_url(self.URL, link)
             data_urls.append(url)
+        data_urls.append('https://stooq.pl/q/?s=wig30')
         return data_urls
 
     def get_historical_data(self, url: str):
@@ -91,7 +102,8 @@ class StockHistoryScraper:
 
     def parse_data(self, csv_data: str, ticker_symbol: str):
         data = list()
-        rows = csv_data.split('\n')[1:]
+        rows = csv_data.split()[1:]
+        # print("ROWS", len(rows), rows[:5])
         for row in rows:
             row = row.strip()
             elements = row.split(',')
@@ -103,7 +115,7 @@ class StockHistoryScraper:
                     elements[-2]
                 ]
             except IndexError:
-                print(elements)
+                print("ERROR", elements, row)
                 continue
             new_data = ','.join(new_data) + "\n"
             data.append(new_data)
