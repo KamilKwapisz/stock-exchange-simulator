@@ -13,7 +13,7 @@ class Account(models.Model):
     balance = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN')
     wallets = models.ManyToManyField('Wallet')
     transaction_fee = models.DecimalField(max_digits=2, decimal_places=1, blank=True, null=True, default=getattr(settings, "PERCENTAGE_FEE", 0.0))
-    transaction_minimal_fee = MoneyField(max_digits=14,decimal_places=2, default_currency='PLN', default=getattr(settings, "MINIMAL_FEE", 0.0))
+    transaction_minimal_fee = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN', default=getattr(settings, "MINIMAL_FEE", 0.0))
 
     def calculate_fee(self, amount) -> Money:
         fee = amount * (self.transaction_fee / 100)
@@ -41,6 +41,9 @@ class Stock(models.Model):
     logo_filename = models.CharField(max_length=64, blank=True, null=True)
     logo_path = models.CharField(max_length=64, blank=True, null=True)
     tendention = models.CharField(choices=TENDENTION, max_length=32, default="up")
+
+    def get_buy_url(self):
+        return f"http://localhost:5005/api/stocks/{self.pk}/buy"
 
     def get_buy_url(self):
         return f"http://localhost:5005/api/stocks/{self.pk}/buy"
@@ -78,7 +81,16 @@ class Wallet(models.Model):
 
     @property
     def amount(self):
-        return self.number * self.stock.price
+        summary = self.number * self.stock.price
+        return summary.amount
+
+    @property
+    def ticker_symbol(self):
+        return self.stock.short_name
+
+    @property
+    def sell_link(self):
+        return f"http://localhost:5005/api/wallets/{self.id}/sell"
 
     def __str__(self):
         return f"{self.number} akcji {self.stock.name} -> {self.amount}"
