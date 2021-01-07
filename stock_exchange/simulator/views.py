@@ -299,7 +299,7 @@ def account_view(request):
     stocks_value = 0.0
     for wallet in account.wallets.all():
         stocks_number += wallet.number
-        stocks_value += wallet.amount
+        stocks_value += float(wallet.amount)
     context = {
         'account': account,
         'stocks_number': stocks_number,
