@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+import statistics
 
 from django.conf import settings
 from django.contrib import messages
@@ -119,9 +120,65 @@ def stock_historical_data_chart(request):
         prices.append(float(price))
         dates.append(date.strftime('%d-%m-%Y'))
 
+    stats = dict()
+    stats['mean'] = round(statistics.mean(prices), 2)
+    stats['std'] = round(statistics.stdev(prices), 2)
+    stats['max'] = max(prices)
+    stats['min'] = min(prices)
+
     return JsonResponse(data={
         'labels': dates,
         'data': prices,
+        'statistics': stats
+    })
+
+
+def stock_historical_data_chart_with_index(request):
+    DATE_FORMAT = "%Y-%m-%d"
+    ticker_symbol = request.GET.get('ticker_symbol', None)
+    date_range = request.GET.get('date_range', '1m')
+    end_date = datetime.today()
+    TIME_DELTAS = {
+        '10d': timedelta(days=10),
+        '1m': timedelta(days=30),
+        '3m': timedelta(days=90),
+        '6m': timedelta(days=180),
+        '1y': timedelta(days=365),
+        '3y': timedelta(days=365 * 3),
+        '5y': timedelta(days=365 * 5),
+    }
+    start_date = end_date - TIME_DELTAS.get(date_range)
+
+    data = StockHistory.objects.filter(
+        stock__short_name=ticker_symbol.upper(),
+        timestamp__range=[
+            start_date.strftime(DATE_FORMAT),
+            end_date.strftime(DATE_FORMAT)
+        ]
+    ).values_list('timestamp', 'price').order_by('-timestamp')
+
+    wig_data = StockHistory.objects.filter(
+        stock__short_name="WIG30",
+        timestamp__range=[
+            start_date.strftime(DATE_FORMAT),
+            end_date.strftime(DATE_FORMAT)
+        ]
+    ).values_list('timestamp', 'price').order_by('-timestamp')
+
+    dates = []
+    prices = []
+    wig_prices = []
+    index = 0
+    for date, price in data:
+        wig_prices.append(float(wig_data[index][1]))
+        prices.append(float(price))
+        dates.append(date.strftime('%d-%m-%Y'))
+        index += 1
+
+    return JsonResponse(data={
+        'labels': dates,
+        'data': prices,
+        'wig_data': wig_prices,
     })
 
 
