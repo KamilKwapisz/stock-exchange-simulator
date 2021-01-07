@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'simulator',
     'djmoney',
+    'rest_framework',
 ]
 
 
@@ -107,3 +108,8 @@ MINIMAL_FEE = 1.0
 PERCENTAGE_FEE = 0.1
 
 mimetypes.add_type("text/css", ".css", True)
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 35
+}

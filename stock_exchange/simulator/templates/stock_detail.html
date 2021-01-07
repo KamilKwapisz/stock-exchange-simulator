@@ -501,7 +501,7 @@ $.ajax({
         }
         let errorMsgBox = document.getElementById("jsValidationError");
         let price = parseFloat("{{ object.price }}");
-        let balance = parseFloat("{{ balance }}");
+        let balance = parseFloat("{{ balance.amount }}");
         if (price * stocksNumber > balance) {
             errorMsgBox.innerHTML = "Niewystarczające środki na koncie.";
             errorMsgBox.style = "display: block";

@@ -3,6 +3,7 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('', include('simulator.urls')),
     path('admin/', admin.site.urls),
