@@ -35,7 +35,7 @@ def index(request):
     stocks_value = 0.0
     for wallet in account.wallets.all():
         stocks_number += wallet.number
-        stocks_value += wallet.amount
+        stocks_value += float(wallet.amount)
 
     context['transactions'] = transactions[:5]
     context['transactions_count'] = transactions[:5].count()
