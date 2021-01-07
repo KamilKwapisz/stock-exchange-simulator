@@ -68,7 +68,8 @@ class Transaction(models.Model):
 
     @property
     def amount(self):
-        return self.stocks_number * self.stock_price
+        summary = self.stocks_number * self.stock_price
+        return summary.amount
 
     def __str__(self):
         return f"{self.user.username} -- {self.operation}"
