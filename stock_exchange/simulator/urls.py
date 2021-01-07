@@ -25,6 +25,7 @@ urlpatterns = [
     path('settings', views.StockSettingsFormView.as_view(), name='settings'),
 
     path('ajax/stock_historical_data_chart', views.stock_historical_data_chart, name='stock_historical_data'),
+    path('ajax/stock_historical_data_chart_with_index', views.stock_historical_data_chart_with_index, name='stock_historical_data_with_index'),
 
     path('api/stocks', api_views.StockViewset.as_view({'get': 'list'}), name='stocks-list-api'),
     path('api/stocks/<int:pk>', api_views.get_stock_detail, name='stock-detail-api'),

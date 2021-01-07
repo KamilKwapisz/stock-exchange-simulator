@@ -208,11 +208,65 @@
                                     <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart('5y')" class="btn btn-primary">5l</a></div>
                                     <!-- TODO: clearing canvas -->
                                 </div>
+                                <div class="row">
+                                    <div class="col-3 pt-3 text-center"><a href="javascript:void(0);" class="btn btn-secondary">średnia: <span id='mean-value'></span></a></div>
+                                    <div class="col-3 pt-3 text-center"><a href="javascript:void(0);" class="btn btn-success">max: <span id='max-value'></span></a></div>
+                                    <div class="col-3 pt-3 text-center"><a href="javascript:void(0);" class="btn btn-danger">min: <span id='min-value'></span></a></div>
+                                    <div class="col-3 pt-3 text-center"><a href="javascript:void(0);" class="btn btn-warning">std: <span id='std-value'></span></a></div>
+                                </div>
                             </div>
                             
                         </div>
                     </div>
                 </div>
+
+                {% if object.short_name != 'WIG30' %}
+                <div class="row">
+                    <!-- Area Chart -->
+                    <div class="col-xl-12 col-lg-7">
+                        <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div
+                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Porównanie z indeksem WIG30</h6>
+                                <!-- <div class="dropdown no-arrow">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                        aria-labelledby="dropdownMenuLink">
+                                        <div class="dropdown-header">Dropdown Header:</div>
+                                        <a class="dropdown-item" href="#">Action</a>
+                                        <a class="dropdown-item" href="#">Another action</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#">Something else here</a>
+                                    </div>
+                                </div> -->
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <div class="chart-area" id="stockChartContainer2">
+                                    <!-- <canvas id="myAreaChart"></canvas> -->
+                                    <canvas id="stockIndexChart" data-url="{% url 'simulator:stock_historical_data_with_index' %}"></canvas>
+                                </div>
+                                <div class="row">
+                                    <div class="col-1 p-3 mx-4 text-center"><a href="javascript:void(0);" onclick="updateChart2('10d')" class="btn btn-primary">10d</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart2('1m')" class="btn btn-primary">1m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart2('3m')" class="btn btn-primary">3m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart2('6m')" class="btn btn-primary">6m</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart2('1y')" class="btn btn-primary">1r</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart2('3y')" class="btn btn-primary">3l</a></div>
+                                    <div class="col-1 p-3 ml-5 text-center"><a href="javascript:void(0);" onclick="updateChart2('5y')" class="btn btn-primary">5l</a></div>
+                                    <!-- TODO: clearing canvas -->
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
 
     </div>
@@ -385,6 +439,13 @@ function clearCanvas() {
     $('#stockChartContainer').append("<canvas id=\"stockDetailChart\" data-url=\"{% url 'simulator:stock_historical_data' %}\"></canvas>");
 }
 
+function updateStats(stats) {
+    $('#mean-value').text(stats.mean);
+    $('#max-value').text(stats.max);
+    $('#min-value').text(stats.min);
+    $('#std-value').text(stats.std);
+}
+
 function updateChart(dateRange) {
 
 var $stockDetailChart = $("#stockDetailChart");
@@ -395,6 +456,7 @@ $.ajax({
   data: { ticker_symbol: "{{object.short_name}}", date_range : dateRange},
   success: function (data) {
     clearCanvas();
+    updateStats(data.statistics);
 
     var ctx = document.getElementById("stockDetailChart");
     // clearCanvas();
@@ -416,7 +478,22 @@ $.ajax({
       pointHitRadius: 1,
       pointBorderWidth: 1,
       data: data.data,
-    }],
+    },{
+      label: "cena",
+      lineTension: 0.2,
+      backgroundColor: "rgba(78, 115, 223, 0.05)",
+      borderColor: "rgba(78, 115, 223, 1)",
+      pointRadius: 1,
+      pointBackgroundColor: "rgba(78, 115, 223, 1)",
+      pointBorderColor: "rgba(78, 115, 223, 1)",
+      pointHoverRadius: 3,
+      pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+      pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+      pointHitRadius: 1,
+      pointBorderWidth: 1,
+      data: data.data,
+    }
+],
   },
   options: {
     maintainAspectRatio: false,
@@ -512,6 +589,144 @@ $.ajax({
             $("#buyForm").submit()
         }
     });
+
+$(document).ready(function() {
+    on_doc_ready();
+});
+
+function on_doc_ready() {
+    updateChart("1m");
+    updateChart2("1m");
+}
+
+function clearCanvas2() {
+    $('#stockIndexChart').remove();
+    $('#stockChartContainer2').append("<canvas id=\"stockIndexChart\" data-url=\"{% url 'simulator:stock_historical_data_with_index' %}\"></canvas>");
+}
+
+function updateChart2(dateRange) {
+
+var $stockIndexChart = $("#stockIndexChart");
+
+
+$.ajax({
+  url: $stockIndexChart.data("url"),
+  data: { ticker_symbol: "{{object.short_name}}", date_range : dateRange},
+  success: function (data) {
+    clearCanvas2();
+
+    var ctx = document.getElementById("stockIndexChart");
+    // clearCanvas();
+    new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: data.labels,
+    datasets: [{
+      label: "cena akcji",
+      lineTension: 0.2,
+      backgroundColor: "rgba(78, 115, 223, 0.05)",
+      borderColor: "rgba(78, 115, 223, 1)",
+      pointRadius: 1,
+      pointBackgroundColor: "rgba(78, 115, 223, 1)",
+      pointBorderColor: "rgba(78, 115, 223, 1)",
+      pointHoverRadius: 3,
+      pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+      pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+      pointHitRadius: 1,
+      pointBorderWidth: 1,
+      data: data.data,
+    },
+    {
+      label: "cena WIG 30",
+      lineTension: 0.2,
+      backgroundColor: "rgba(78, 115, 223, 0.00)",
+      borderColor: "rgba(255, 47, 55, 1)",
+      pointRadius: 1,
+      pointBackgroundColor: "rgba(255, 47, 55, 1)",
+      pointBorderColor: "rgba(255, 47, 55, 1)",
+      pointHoverRadius: 3,
+    //   pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+      pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+      pointHitRadius: 1,
+      pointBorderWidth: 1,
+      data: data.wig_data,
+    }
+],
+  },
+  options: {
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        left: 10,
+        right: 25,
+        top: 25,
+        bottom: 0
+      }
+    },
+    scales: {
+      xAxes: [{
+        time: {
+          unit: 'date'
+        },
+        gridLines: {
+          display: false,
+          drawBorder: false
+        },
+        ticks: {
+          maxTicksLimit: 19
+        }
+      }],
+      yAxes: [{
+        ticks: {
+          maxTicksLimit: 6,
+          padding: 10,
+          max: 3200,
+          callback: function(value, index, values) {
+            return value;
+          }
+        },
+        gridLines: {
+          color: "rgb(234, 236, 244)",
+          zeroLineColor: "rgb(234, 236, 244)",
+          drawBorder: false,
+          borderDash: [2],
+          zeroLineBorderDash: [2]
+        }
+      }],
+    },
+    legend: {
+      display: true
+    },
+    tooltips: {
+      backgroundColor: "rgb(255,255,255)",
+      bodyFontColor: "#858796",
+      titleMarginBottom: 10,
+      titleFontColor: '#6e707e',
+      titleFontSize: 14,
+      borderColor: '#dddfeb',
+      borderWidth: 1,
+      xPadding: 15,
+      yPadding: 15,
+      displayColors: false,
+      intersect: false,
+      mode: 'index',
+      caretPadding: 15,
+      callbacks: {
+        label: function(tooltipItem, chart) {
+          var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+          return datasetLabel + ':' + tooltipItem.yLabel + ' PLN';
+        }
+      }
+    }
+  }
+});
+    
+
+  }
+});
+}
+
+
 
 </script>
 {% endblock %}
