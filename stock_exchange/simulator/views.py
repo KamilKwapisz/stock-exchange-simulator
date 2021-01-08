@@ -23,7 +23,6 @@ from .utils import save_wallets, sell_stocks
 
 def index(request):
     context = {}
-
     transactions = Transaction.objects.filter(
         user=request.user
     ).order_by('-timestamp')

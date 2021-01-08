@@ -28,7 +28,8 @@ class Command(BaseCommand):
                 continue
             else:
                 stock.price = row.get('price')
-                stock.timestamp = datetime.strptime(row.get('datetime'), "%Y-%m-%d")
+                dt = row.get('datetime')
+                stock.timestamp = datetime.strptime(dt, "%Y-%m-%d")
                 save_stock_history(stock)
                 counter += 1
                 print(counter)

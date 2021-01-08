@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'simulator',
     'djmoney',
     'rest_framework',
+    'django_celery_results',
 ]
 
 
@@ -113,3 +114,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 35
 }
+
+CELERY_TIMEZONE = "Europe/Warsaw"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 60 * 60
+CELERY_RESULT_BACKEND = 'django-db'
