@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'djmoney',
     'rest_framework',
     'django_celery_results',
+    'scraping'
 ]
 
 

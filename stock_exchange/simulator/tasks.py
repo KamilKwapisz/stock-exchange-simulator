@@ -1,7 +1,7 @@
 from celery import shared_task
 from django.core.management import call_command
 
-from ..scraping.run import ScrapeDataCommand
+from scraping.run import ScrapeDataCommand
 
 
 @shared_task

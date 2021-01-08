@@ -1,7 +1,7 @@
 from sys import argv
 
-from scraper import StockScraper, StockHistoryScraper
-from writer import write_data
+from .scraper import StockScraper, StockHistoryScraper
+from .writer import write_data
 
 
 URL = "https://stooq.pl/t/?i=582"
