@@ -107,3 +107,17 @@ class StockHistory(models.Model):
 
     def __str__(self):
         return f"{self.stock.short_name} at {self.price} ({self.timestamp})"
+
+
+class News(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+    link = models.CharField(max_length=2048, blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
+    portal = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "news"
+
+    def __str__(self):
+        return self.link
