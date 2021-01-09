@@ -24,6 +24,6 @@ app.conf.beat_schedule = {
     },
     'regular-news-scraping': {
         'task': 'simulator.tasks.scrape_news',
-        'schedule': crontab(day='*/1'),
+        'schedule': crontab(minute=0, day_of_week='*/1'),
     },
 }
