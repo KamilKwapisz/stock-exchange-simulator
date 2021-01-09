@@ -111,6 +111,7 @@ class StockHistory(models.Model):
 
 class News(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    title = models.CharField(max_length=2048, blank=True, null=True)
     timestamp = models.DateTimeField()
     link = models.CharField(max_length=2048, blank=True, null=True)
     text = models.TextField(blank=True, null=True)
