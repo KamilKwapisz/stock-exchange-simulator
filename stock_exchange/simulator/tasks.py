@@ -5,6 +5,11 @@ from scraping.run import ScrapeDataCommand
 
 
 @shared_task
+def apply_stoploss():
+    call_command('stoploss', interactive=False)
+
+
+@shared_task
 def update_stock_data():
     # scraping
     cmd = ScrapeDataCommand()
@@ -12,3 +17,6 @@ def update_stock_data():
 
     # updating
     call_command('update', interactive=False)
+
+    # stoploss
+    apply_stoploss.delay()
