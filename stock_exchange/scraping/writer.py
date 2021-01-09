@@ -1,7 +1,7 @@
-def write_data(data: list, output: str = 'stock_data.csv', historical: bool = False):
+def write_data(data: list, output: str = 'stock_data.csv', join_data: bool = True, separator: str = ';'):
     output = f"../{output}"
-    if not historical:
-        data = [",".join(row) for row in data]
+    if join_data:
+        data = [separator.join(row) for row in data]
         rows = [f"{row}\n" for row in data]
     else:
         rows = data
