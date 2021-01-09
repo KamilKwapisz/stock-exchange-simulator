@@ -160,12 +160,15 @@ class NewsScraper:
         all_news = soup('div', {'class': "record-type-NEWS"})
         news_data = list()
         for news in all_news:
-            link = news.select_one('div.record-header > a').get('href')
+            a_tag = news.select_one('div.record-header > a')
+            title = a_tag.text
+            print(title)
+            link = a_tag.get('href')
             text = news.select_one('div.record-body').text.strip()
             portal = news.select_one('a.record-author').text
             date = news.select_one('span.record-date').text
             news_data.append(
-                (stock_ticker, link, text, portal, date)
+                (stock_ticker, title, link, text, portal, date)
             )
         return news_data
 
