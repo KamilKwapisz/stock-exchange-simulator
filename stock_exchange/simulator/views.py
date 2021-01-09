@@ -17,7 +17,7 @@ from django.views.decorators.debug import sensitive_variables, sensitive_post_pa
 from djmoney.money import Money
 
 from .forms import AccoutChargeForm, StockBuyForm, StockSellForm, UserForm, StockSettingsForm
-from .models import Account, Stock, StockHistory, Wallet, Transaction
+from .models import Account, Stock, StockHistory, Wallet, Transaction, News
 from .utils import save_wallets, sell_stocks
 
 
@@ -75,6 +75,9 @@ class StockDetail(DetailView):
 
         account = Account.objects.get(owner=self.request.user)
         context['balance'] = account.balance
+
+        news = News.objects.filter(stock=self.object).order_by('-timestamp')[:5]
+        context['recent_news'] = news
 
         try:
             wallet = account.wallets.get(stock=self.object.pk)

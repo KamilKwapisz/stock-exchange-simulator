@@ -22,4 +22,8 @@ app.conf.beat_schedule = {
         'task': 'simulator.tasks.update_stock_data',
         'schedule': crontab(minute=0, hour='*/3'),
     },
+    'regular-news-scraping': {
+        'task': 'simulator.tasks.scrape_news',
+        'schedule': crontab(minute=0, day_of_week='*/1'),
+    },
 }

@@ -4,7 +4,6 @@ from datetime import datetime
 from time import sleep
 from urllib.parse import urljoin, urlparse
 
-
 class StockScraper:
 
     def __init__(self):
@@ -134,3 +133,48 @@ class StockHistoryScraper:
             data += row_data
             sleep(2)
         return data
+
+
+class NewsScraper:
+    def __init__(self):
+        self.URL: str
+        self.ua = "Praca dyplomowa"
+        self.response = None
+        self.parser = "html.parser"
+
+    def __get(self, url: str, extract_html=False) -> str:
+        headers = {
+            'User-Agent': self.ua
+        }
+        response = requests.get(
+            url=url,
+            headers=headers
+        )
+        if extract_html is True:
+            html = response.text
+            return html
+        else:
+            return response
+
+    def get_news(self, soup, stock_ticker: str) -> list:
+        all_news = soup('div', {'class': "record-type-NEWS"})
+        news_data = list()
+        for news in all_news:
+            a_tag = news.select_one('div.record-header > a')
+            title = a_tag.text
+            print(title)
+            link = a_tag.get('href')
+            text = news.select_one('div.record-body').text.strip()
+            portal = news.select_one('a.record-author').text
+            date = news.select_one('span.record-date').text
+            news_data.append(
+                (stock_ticker, title, link, text, portal, date)
+            )
+        return news_data
+
+    def scrape(self, URL: str, stock_ticker: str) -> list:
+        self.URL = URL
+        html = self.__get(URL, extract_html=True)
+        soup = BeautifulSoup(html, self.parser)
+        news_data = self.get_news(soup, stock_ticker)
+        return news_data

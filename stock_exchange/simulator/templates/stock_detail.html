@@ -284,83 +284,30 @@
                     <!-- Card Content - Collapse -->
                     <div class="collapse show" id="collapseCardExample">
                         <div class="card-body">
-                            <div class="pl-2">
+
+                        {% if recent_news %}
+                            {% for news in recent_news %}
+                            <div class="pl-2 pb-3">
                                 <div class="row">
                                     <div class="col-8">
-                                        <h5>Tytuł artykułu</h5>
+                                        <h5><a href="{{ news.link }}" target="_blank">{{ news.title }}</a></h5>
                                     </div>
                                     <div class="col-4">
-                                        01.02.2020
+                                        {{ news.timestamp }}
                                     </div>
                                 </div>
-                                <div class="text-sm text-success">Nazwa portalu</div>
-                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
+                                <div class="text-sm text-success">{{ news.portal }}</div>
+                                <div class="text-sm">{{ news.text }}</div>
                             </div>
-
-                            <div class="pl-2 pt-5">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <h5>Tytuł artykułu</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        01.02.2020
-                                    </div>
+                            {% endfor %}
+                        {% else  %}
+                        <div>
+                            <div class="row">
+                                    <h5>Brak artykułów</h5>
                                 </div>
-                                <div class="text-sm text-success">Nazwa portalu</div>
-                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
-                            </div>
+                        </div>
+                        {% endif %}
 
-                            <div class="pl-2 pt-5">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <h5>Tytuł artykułu</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        01.02.2020
-                                    </div>
-                                </div>
-                                <div class="text-sm text-success">Nazwa portalu</div>
-                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
-                            </div>
-
-                            <div class="pl-2 pt-5">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <h5>Tytuł artykułu</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        01.02.2020
-                                    </div>
-                                </div>
-                                <div class="text-sm text-success">Nazwa portalu</div>
-                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
-                            </div>
-
-                            <div class="pl-2 pt-5">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <h5>Tytuł artykułu</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        01.02.2020
-                                    </div>
-                                </div>
-                                <div class="text-sm text-success">Nazwa portalu</div>
-                                <div class="text-sm">Spółka {{object.full_name}} w 2 kwartale 2020 wyemitowała 300 tysięcy akcji...</div>
-                            </div>
-
-                            <div class="pl-2 pt-4 text-right">
-                                <nav aria-label="Page navigation example">
-                                    <ul class="pagination text-right">
-                                      <li class="page-item"><a class="page-link" href="#"><</a></li>
-                                      <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                      <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                      <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                      <li class="page-item"><a class="page-link" href="#">></a></li>
-                                    </ul>
-                                  </nav>
-                            </div>
-                            
 
                         </div>
                     </div>
@@ -372,26 +319,6 @@
                     </div>
 
                     
-
-                    <!-- <div class="row">
-                        <div class="col-xl-8 col-md-6 mb-4">
-                            <div class="card border-left-danger shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1 text-center">
-                                                Nie udało się kupić akcji</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800 text-center">Jakiś tam msg błędu</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
                     
 
                        
