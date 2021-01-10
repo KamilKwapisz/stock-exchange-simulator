@@ -1,11 +1,14 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import gettext as _
 
 from djmoney.money import Money
 from djmoney.models.fields import MoneyField
 
+from simulator.generators import generate_key
 
 
 class Account(models.Model):
@@ -14,6 +17,7 @@ class Account(models.Model):
     wallets = models.ManyToManyField('Wallet')
     transaction_fee = models.DecimalField(max_digits=2, decimal_places=1, blank=True, null=True, default=getattr(settings, "PERCENTAGE_FEE", 0.0))
     transaction_minimal_fee = MoneyField(max_digits=14, decimal_places=2, default_currency='PLN', default=getattr(settings, "MINIMAL_FEE", 0.0))
+    api_key = models.CharField(max_length=64, blank=True, null=True)
 
     def calculate_fee(self, amount) -> Money:
         fee = amount * (self.transaction_fee / 100)
@@ -122,3 +126,10 @@ class News(models.Model):
 
     def __str__(self):
         return self.link
+
+
+@receiver(post_save, sender=Account)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        instance.api_key = generate_key()
+        instance.save()
