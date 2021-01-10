@@ -14,8 +14,23 @@ class StockViewset(viewsets.ModelViewSet):
     serializer_class = serializers.StockSerializer
 
 
+def authenticate(request):
+    key = request.META.get('HTTP_STOCK_AUTH_KEY')
+    if not key:
+        return None
+    try:
+        account = Account.objects.get(api_key=key)
+    except Account.DoesNotExist:
+        return None
+    else:
+        return account
+
+
 @api_view(['GET'])
 def get_stock_detail(request, pk):
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     stock = Stock.objects.get(pk=pk)
     serializer = serializers.StockSerializer(stock)
     return Response(serializer.data)
@@ -23,16 +38,18 @@ def get_stock_detail(request, pk):
 
 @api_view(['GET'])
 def get_account_details(request):
-    pk = 1  # TODO
-    account = Account.objects.get(pk=1)
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     serializer = serializers.AccountSerializer(account)
     return Response(serializer.data)
 
 
 @api_view(['POST'])
 def set_fee_values(request):
-    pk = 1  # TODO
-    account = Account.objects.get(pk=1)
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     transaction_fee = request.POST.get('transaction_fee')
     transaction_minimal_fee = request.POST.get('transaction_minimal_fee')
     if transaction_fee is not None:
@@ -84,8 +101,9 @@ def set_fee_values(request):
 
 @api_view(['POST'])
 def charge_account(request):
-    pk = 1  # TODO
-    account = Account.objects.get(pk=1)
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     amount = request.POST.get('amount', 0)
     try:
         amount = float(amount)
@@ -116,8 +134,9 @@ def charge_account(request):
 
 @api_view(['GET'])
 def get_transaction_history(request):
-    pk = 1
-    user = User.objects.get(pk=pk)
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     transactions = Transaction.objects.filter(
         user=user
     ).order_by('-timestamp')
@@ -128,8 +147,9 @@ def get_transaction_history(request):
 
 @api_view(['GET'])
 def get_wallets(request):
-    pk = 1
-    account = Account.objects.get(pk=pk)
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     serializer = serializers.WalletSerializer(
         account.wallets.all(),
         many=True
@@ -139,6 +159,9 @@ def get_wallets(request):
 
 @api_view(['POST'])
 def buy_stock(request, stock_pk):
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         stock_pk = int(stock_pk)
     except ValueError:
@@ -173,8 +196,6 @@ def buy_stock(request, stock_pk):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-    pk = 1
-    account = Account.objects.get(pk=pk)
     if isinstance(stock_pk, int):
         stock = Stock.objects.get(pk=stock_pk)
     else:
@@ -220,6 +241,9 @@ def buy_stock(request, stock_pk):
 
 @api_view(['POST'])
 def sell_stock(request, wallet_pk):
+    account = authenticate(request)
+    if not account:
+        return Response({'message': "Niepoprawny nagłówek Stock-Auth-Key."}, status=status.HTTP_401_UNAUTHORIZED)
     stocks_number = request.POST.get('number')
     if stocks_number is not None:
         try:
@@ -258,9 +282,6 @@ def sell_stock(request, wallet_pk):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
-    pk = 1
-    user = User.objects.get(pk=pk)
-    account = Account.objects.get(owner=user)
     fee = account.calculate_fee(amount)
     amount -= fee
 
@@ -268,7 +289,7 @@ def sell_stock(request, wallet_pk):
     account.save()
 
     transaction = Transaction(
-        user=user,
+        user=account.owner,
         stock=stock,
         operation="sell",
         stocks_number=stocks_number,
