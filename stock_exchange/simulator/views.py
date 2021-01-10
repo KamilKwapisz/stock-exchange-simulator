@@ -385,7 +385,6 @@ class StockSettingsFormView(FormView):
     template_name = 'settings.html'
 
     def get_context_data(self, **kwargs):
-        # TODO REFACTOR
         context = super(StockSettingsFormView, self).get_context_data(**kwargs)
         account = Account.objects.get(owner=self.request.user)
         context['transaction_fee'] = str(account.transaction_fee).replace(',', '.')
