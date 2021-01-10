@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center mb-4">
+                        <h1 class="h3 mb-0 text-gray-800 font-weight-bolder"> Ustawienia giełdy</h1>
+                        <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+                    <div class="col-xl-8">
+                    <div class="card  shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Zmień ustawienia dotyczące prowizji</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <p>
+                                            <label for="{{form.transaction_fee.id_for_label}}">Prowizja (%):</label> 
+                                            <input class="form-control" value="{{ transaction_fee }}" type="number" name="{{ form.transaction_fee.html_name }}" id="{{ form.amount.id_for_label }}" min="0.00", step="0.01">
+                                        </p>
+                                        <p>
+                                            <label for="{{form.transaction_minimal_fee.id_for_label}}">Kwota minimalnej prowizji:</label> 
+                                            <input class="form-control" value="{{ transaction_minimal_fee }}" type="number" name="{{ form.transaction_minimal_fee.html_name }}" id="{{ form.amount.id_for_label }}" min="0.00", step="0.01">
+                                        </p>
+                                        <!-- <label for="" class="col-form-label col-sm-1"> {{ form.amount.label_tag }}</label>
+                                        <input class="form-control" value="{{ form.amount.value }}" type="number" name="{{ form.amount.html_name }}" id="{{ form.amount.id_for_label }}" maxlength="50"> -->
+                                        <button type="submit" class="btn btn-success">Ustaw</button>
+                                    </form>
+                                </div>
+                            </div>
+                    </div>
+                    </div>
+                    
+                
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Content Column -->
+                        <div class="col-lg-6 mb-4">
+
+                            
+
+                            
+
+                        </div>
+
+                        <div class="col-lg-6 mb-4">
+
+                    
+                            
+
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+{% endblock %}
