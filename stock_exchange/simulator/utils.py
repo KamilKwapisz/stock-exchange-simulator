@@ -1,7 +1,7 @@
 from django.conf import settings
 from djmoney.money import Money
 
-from .models import Wallet, StockHistory
+from simulator.models import Wallet, StockHistory
 
 
 def save_wallets(account, stock, number, stoploss):
