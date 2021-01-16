@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from time import sleep
+from typing import Tuple
 from urllib.parse import urljoin, urlparse
 
 
@@ -21,13 +22,13 @@ class Scraper:
         }
 
     @staticmethod
-    def __join_url(base_url: str, link: str) -> str:
+    def join_url(base_url: str, link: str) -> str:
         parsed_url = urlparse(base_url)
         domain = f"{parsed_url.scheme}://{parsed_url.netloc}"
         url = urljoin(domain, link)
         return url
     
-    def __get(self, url: str, extract_html=False) -> str:
+    def get(self, url: str, extract_html=False) -> str:
         response = requests.get(
             url=url,
             headers=self.headers
@@ -55,13 +56,13 @@ class StockScraper(Scraper):
         return data
 
     def get_wig30_data(self) -> list:
-        html = self.__get(WIG30_URL, extract_html=True)
+        html = self.get(WIG30_URL, extract_html=True)
         soup = BeautifulSoup(html, self.parser_name)
         price = soup.find('span', {'id': 'aq_wig30_c2'}).text
         return ["WIG30", "WIG30", price]
 
     def scrape(self, URL: str) -> list:
-        html = self.__get(URL, extract_html=True)
+        html = self.get(URL, extract_html=True)
         data = self.parse_data(html)
         wig30_data = self.get_wig30_data()
         print(data)
@@ -77,20 +78,20 @@ class StockHistoryScraper(Scraper):
         data_urls = list()
         for link in links:
             link = link.get('href')
-            url = self.__join_url(self.URL, link)
+            url = self.join_url(self.URL, link)
             data_urls.append(url)
         data_urls.append(WIG30_URL)
         return data_urls
 
-    def __get_historical_data_url(self, url: str) -> str:
+    def __get_historical_data_url(self, url: str) -> Tuple[str, str]:
         parsed = urlparse(url)
         historical_data_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}/d/l/?{parsed.query}&d1={START_DATE}&d2={datetime.now().strftime(DATE_FORMAT)}&i=d"
-        return historical_data_url
+        ticker_symbol = parsed.query.split('=')[-1]
+        return historical_data_url, ticker_symbol
 
     def get_historical_data(self, url: str) -> str:
-        historical_data_url = self.__get_historical_data_url(url)
-        ticker_symbol = parsed.query.split('=')[-1]
-        csv_data = self.__get(historical_data_url, extract_html=True)
+        historical_data_url, ticker_symbol = self.__get_historical_data_url(url)
+        csv_data = self.get(historical_data_url, extract_html=True)
         data = self.parse_data(csv_data, ticker_symbol)
         return data
 
@@ -116,7 +117,7 @@ class StockHistoryScraper(Scraper):
 
     def scrape(self, url: str) -> list:
         self.URL = url
-        html = self.__get(url, extract_html=True)
+        html = self.get(url, extract_html=True)
         stock_data_links = self.get_stock_data_links(html)
         data = list()
         for link in stock_data_links:
@@ -146,6 +147,6 @@ class NewsScraper(Scraper):
 
     def scrape(self, URL: str, stock_ticker: str) -> list:
         self.URL = URL
-        html = self.__get(URL, extract_html=True)
+        html = self.get(URL, extract_html=True)
         news_data = self.get_news(html, stock_ticker)
         return news_data
