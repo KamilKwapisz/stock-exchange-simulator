@@ -2,30 +2,51 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from time import sleep
+from typing import Tuple
 from urllib.parse import urljoin, urlparse
 
-class StockScraper:
 
+WIG30_URL = 'https://stooq.pl/q/?s=wig30'
+START_DATE = "20150101"
+DATE_FORMAT = '%Y%m%d'
+
+
+class Scraper:
     def __init__(self):
         self.URL: str
         self.ua = "Praca dyplomowa"
         self.response = None
-        self.parser = "html.parser"
-
-    def __get(self) -> str:
-        headers = {
+        self.parser_name = "html.parser"
+        self.headers = {
             'User-Agent': self.ua
         }
-        self.response = requests.get(
-            url=self.URL,
-            headers=headers
-        )
-        html = self.response.text
-        return html
 
-    def parse(self, html: str) -> list:
+    @staticmethod
+    def join_url(base_url: str, link: str) -> str:
+        parsed_url = urlparse(base_url)
+        domain = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        url = urljoin(domain, link)
+        return url
+    
+    def get(self, url: str, extract_html=False) -> str:
+        response = requests.get(
+            url=url,
+            headers=self.headers
+        )
+        if extract_html is True:
+            html = response.text
+            return html
+        else:
+            return response
+
+    def scrape(self, URL: str) -> list:
+        raise NotImplementedError
+
+
+class StockScraper(Scraper):
+    def parse_data(self, html: str) -> list:
         data = list()
-        soup = BeautifulSoup(html, self.parser)
+        soup = BeautifulSoup(html, self.parser_name)
         table = soup.find('tbody', {'align': 'right'})
 
         for row in table('tr'):
@@ -35,16 +56,14 @@ class StockScraper:
         return data
 
     def get_wig30_data(self) -> list:
-        self.URL = "https://stooq.pl/q/?s=wig30"
-        html = self.__get()
-        soup = BeautifulSoup(html, self.parser)
+        html = self.get(WIG30_URL, extract_html=True)
+        soup = BeautifulSoup(html, self.parser_name)
         price = soup.find('span', {'id': 'aq_wig30_c2'}).text
         return ["WIG30", "WIG30", price]
 
     def scrape(self, URL: str) -> list:
-        self.URL = URL
-        html = self.__get()
-        data = self.parse(html)
+        html = self.get(URL, extract_html=True)
+        data = self.parse_data(html)
         wig30_data = self.get_wig30_data()
         print(data)
         print(wig30_data)
@@ -52,61 +71,36 @@ class StockScraper:
         return data
 
 
-class StockHistoryScraper:
-    def __init__(self):
-        self.URL: str
-        self.ua = "Praca dyplomowa"
-        self.response = None
-        self.parser = "html.parser"
-
-    def __get(self, url: str, extract_html=False) -> str:
-        headers = {
-            'User-Agent': self.ua
-        }
-        response = requests.get(
-            url=url,
-            headers=headers
-        )
-        if extract_html is True:
-            html = response.text
-            return html
-        else:
-            return response
-
-    @staticmethod
-    def __join_url(base_url: str, link: str) -> str:
-        parsed_url = urlparse(base_url)
-        domain = f"{parsed_url.scheme}://{parsed_url.netloc}"
-        url = urljoin(domain, link)
-        return url
-
-    def get_stock_data_links(self, soup) -> list:
+class StockHistoryScraper(Scraper):
+    def get_stock_data_links(self, html: str) -> list:
+        soup = BeautifulSoup(html, self.parser_name)
         links = soup.select("tr[id^='r_'] > td > b > a")
         data_urls = list()
         for link in links:
             link = link.get('href')
-            url = self.__join_url(self.URL, link)
+            url = self.join_url(self.URL, link)
             data_urls.append(url)
-        data_urls.append('https://stooq.pl/q/?s=wig30')
+        data_urls.append(WIG30_URL)
         return data_urls
 
-    def get_historical_data(self, url: str):
+    def __get_historical_data_url(self, url: str) -> Tuple[str, str]:
         parsed = urlparse(url)
-        historical_data_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}/d/l/?{parsed.query}&d1=20150101&d2={datetime.now().strftime('%Y%m%d')}&i=d"
-        print('LINK, ', historical_data_url)
+        historical_data_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}/d/l/?{parsed.query}&d1={START_DATE}&d2={datetime.now().strftime(DATE_FORMAT)}&i=d"
         ticker_symbol = parsed.query.split('=')[-1]
-        csv_data = self.__get(historical_data_url, extract_html=True)
+        return historical_data_url, ticker_symbol
+
+    def get_historical_data(self, url: str) -> str:
+        historical_data_url, ticker_symbol = self.__get_historical_data_url(url)
+        csv_data = self.get(historical_data_url, extract_html=True)
         data = self.parse_data(csv_data, ticker_symbol)
         return data
 
-    def parse_data(self, csv_data: str, ticker_symbol: str):
+    def parse_data(self, csv_data: str, ticker_symbol: str) -> list:
         data = list()
         rows = csv_data.split()[1:]
-        # print("ROWS", len(rows), rows[:5])
         for row in rows:
             row = row.strip()
             elements = row.split(',')
-
             try:
                 new_data = [
                     ticker_symbol,
@@ -121,11 +115,10 @@ class StockHistoryScraper:
         return data
 
 
-    def scrape(self, URL: str) -> list:
-        self.URL = URL
-        html = self.__get(URL, extract_html=True)
-        soup = BeautifulSoup(html, self.parser)
-        stock_data_links = self.get_stock_data_links(soup)
+    def scrape(self, url: str) -> list:
+        self.URL = url
+        html = self.get(url, extract_html=True)
+        stock_data_links = self.get_stock_data_links(html)
         data = list()
         for link in stock_data_links:
             print(link)
@@ -135,34 +128,14 @@ class StockHistoryScraper:
         return data
 
 
-class NewsScraper:
-    def __init__(self):
-        self.URL: str
-        self.ua = "Praca dyplomowa"
-        self.response = None
-        self.parser = "html.parser"
-
-    def __get(self, url: str, extract_html=False) -> str:
-        headers = {
-            'User-Agent': self.ua
-        }
-        response = requests.get(
-            url=url,
-            headers=headers
-        )
-        if extract_html is True:
-            html = response.text
-            return html
-        else:
-            return response
-
-    def get_news(self, soup, stock_ticker: str) -> list:
+class NewsScraper(Scraper):
+    def get_news(self, html: str, stock_ticker: str) -> list:
+        soup = BeautifulSoup(html, self.parser_name)
         all_news = soup('div', {'class': "record-type-NEWS"})
         news_data = list()
         for news in all_news:
             a_tag = news.select_one('div.record-header > a')
             title = a_tag.text
-            print(title)
             link = a_tag.get('href')
             text = news.select_one('div.record-body').text.strip()
             portal = news.select_one('a.record-author').text
@@ -174,7 +147,6 @@ class NewsScraper:
 
     def scrape(self, URL: str, stock_ticker: str) -> list:
         self.URL = URL
-        html = self.__get(URL, extract_html=True)
-        soup = BeautifulSoup(html, self.parser)
-        news_data = self.get_news(soup, stock_ticker)
+        html = self.get(URL, extract_html=True)
+        news_data = self.get_news(html, stock_ticker)
         return news_data
