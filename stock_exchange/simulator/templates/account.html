@@ -100,7 +100,6 @@
                                 </div>
                             </div>
 
-                    <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Posiadane akcje</h6>
@@ -134,7 +133,6 @@
                                         {% for wallet in account.wallets.all %}
                                         <tr>
                                             <td><img src="{% static 'simulator/img/stock_logos/'|add:wallet.stock.logo_filename %}" width="50" height="50" class="img-thumbnail border-0 rounded float-left"></td>
-                                            <!-- <td><img src="https://dummyimage.com/50" class="img-thumbnail border-0 rounded float-left"></td> -->
                                             <td>{{ wallet.stock.name }} <sub>{{ wallet.stock.short_name }}</sub></td>
                                             <td>{{ wallet.number }}</td>
                                             <td>{{ wallet.stock.price }}</td>
