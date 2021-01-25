@@ -1,7 +1,6 @@
 from celery import shared_task
 from django.core.management import call_command
 
-from simulator.models import Stock
 from scraping.run import ScrapeDataCommand, NewsScraperDataCommand
 
 
@@ -25,9 +24,5 @@ def update_stock_data():
 
 @shared_task
 def scrape_news():
-    ticker_symbols = list()
-    stocks = Stock.objects.all().values('short_name')
-    for stock in stocks:
-        ticker_symbols.append(stock.get('short_name'))
     cmd = NewsScraperDataCommand()
-    cmd.execute(ticker_symbols)
+    cmd.execute()

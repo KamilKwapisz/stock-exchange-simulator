@@ -1,8 +1,12 @@
 from abc import ABC, abstractmethod
 from sys import argv
 
-from scraper import StockScraper, StockHistoryScraper, NewsScraper
-from writer import write_data
+try:
+    from scraping.scraper import StockScraper, StockHistoryScraper, NewsScraper
+    from scraping.writer import write_data
+except ImportError:
+    from scraper import StockScraper, StockHistoryScraper, NewsScraper
+    from writer import write_data
 
 
 URL = "https://stooq.pl/t/?i=582"

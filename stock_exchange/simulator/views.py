@@ -22,6 +22,8 @@ from .utils import save_wallets, sell_stocks
 
 
 def index(request):
+    if not request.user.is_authenticated:
+        return redirect(reverse('simulator:login'))
     context = {}
     transactions = Transaction.objects.filter(
         user=request.user
@@ -342,7 +344,7 @@ class RegisterView(View):
 
             return redirect(reverse('simulator:index'))
         elif form.cleaned_data['password'] != form.cleaned_data['password_confirm']:
-            form.add_error('password_confirm', 'Passwords do not match')
+            form.add_error('password_confirm', 'Hasła nie są identyczne!')
 
         return render(request, self.template_name, {'form': form})
 
@@ -389,6 +391,7 @@ class StockSettingsFormView(FormView):
         account = Account.objects.get(owner=self.request.user)
         context['transaction_fee'] = str(account.transaction_fee).replace(',', '.')
         context['transaction_minimal_fee'] = str(account.transaction_minimal_fee.amount).replace(',', '.')
+        context['api_key'] = account.api_key
         return context
 
     def form_valid(self, form):

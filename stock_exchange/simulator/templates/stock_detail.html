@@ -134,7 +134,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Posiadane akcje</div>
+                                            Posiadane akcje spółki</div>
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stocks_in_wallet }}</div>
                                     </div>
                                     <div class="col-auto">
@@ -152,7 +152,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Wartość akcji</div>
+                                            Wartość posiadanych akcji spółki</div>
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stocks_value }} </div>
                                     </div>
                                     <div class="col-auto">
@@ -551,7 +551,7 @@ $.ajax({
     datasets: [{
       label: "cena akcji",
       lineTension: 0.2,
-      backgroundColor: "rgba(78, 115, 223, 0.05)",
+      backgroundColor: "rgba(78, 115, 223, 0.00)",
       borderColor: "rgba(78, 115, 223, 1)",
       pointRadius: 1,
       pointBackgroundColor: "rgba(78, 115, 223, 1)",
@@ -607,7 +607,7 @@ $.ajax({
         ticks: {
           maxTicksLimit: 6,
           padding: 10,
-          max: 3200,
+        //   max: 3200,
           callback: function(value, index, values) {
             return value;
           }
