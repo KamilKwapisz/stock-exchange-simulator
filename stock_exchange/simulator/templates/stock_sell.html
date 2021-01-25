@@ -75,27 +75,3 @@
             </div>
             <!-- End of Main Content -->
 {% endblock %}
-{% block scripts %}
-<script>
-    function validateBuyForm(form){
-    console.log(form);
-    let stocksNumber = document.getElementById("id_number").value;
-    console.log(stocksNumber);
-    try {
-        stocksNumber = parseInt(stocksNumber)
-    } catch (error) {
-        return false;
-    }
-    let price = {{ object.price }};
-    let balance = {{ balance }};
-    console.log(price);
-    console.log(balance);
-    if (price * stocksNumber > balance) {
-        return false;
-    } else {
-        return true;
-    }
-}
-</script>
-
-{% endblock %}

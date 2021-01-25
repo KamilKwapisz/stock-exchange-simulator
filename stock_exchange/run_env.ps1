@@ -1,3 +1,5 @@
+invoke-expression "net start mysql80"
+
 invoke-expression "cmd /c start powershell -NoExit -Command {
     cd 'E:\!STUDIA\7 SEMESTR\Projekt Dyplomowy\stockapp\Scripts';
     .\activate;

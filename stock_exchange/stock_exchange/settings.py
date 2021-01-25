@@ -25,11 +25,13 @@ INSTALLED_APPS = [
     'djmoney',
     'rest_framework',
     'django_celery_results',
-    'scraping'
+    'scraping',
+    'corsheaders',
 ]
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -98,7 +100,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -120,3 +122,5 @@ CELERY_TIMEZONE = "Europe/Warsaw"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 60 * 60
 CELERY_RESULT_BACKEND = 'django-db'
+
+# CORS_ORIGIN_ALLOW_ALL = True
