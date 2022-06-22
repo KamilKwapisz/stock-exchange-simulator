@@ -24,7 +24,7 @@ idna==2.9
 importlib-metadata==3.3.0
 kombu==5.0.2
 mysqlclient
-numpy==1.18.4
+numpy==1.22.0
 pandas==1.0.3
 prompt-toolkit==3.0.10
 py-moneyed==0.8.0
